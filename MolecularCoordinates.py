@@ -1,0 +1,53 @@
+"""
+A module for working with the three-dimensional molecular coordinates.
+
+In particular, this allows:
+1.representation of 3D-structures as sets of xyz coordinates
+2.conversion of 3D coordinates to distance matrices
+3.comparison of conformations of the same molecule
+"""
+
+
+################################################################################
+
+
+class MolecularCoordinates:
+	"""
+	A class for representing 3D-molecular structures:
+	
+	========= ==============================================================
+	Attribute Meaning
+	========= ==============================================================
+	`atomVec`: a vector of atomic numbers corresponding to the xyz coordinates in xyzCoor
+	`xyzCoor`: a matrix of x (column 1), y (column 2) and z (column 3) coordinates for atoms within a molecule
+	'atomLabels': (optional to specify) a vector of unique integer labels corresponding to the xyz coordinates in xyzCoor; in the absence of input, it will be assumed that the labels are 1 for the first atom, 2 for the second atom, etc.
+	'atoms':   number of atoms in the molecule (based on the length of atomVec)
+	'coordDict' and 'atomTypeDict': dictionaries mapping atomLabel to coordinates and atom types, respectively
+	'atomTypeRange': the different possible values in atomVec
+	========= ==============================================================
+	"""
+	
+	def __init__(self, atomVec, xyzCoor, atomLabels=None):
+		self.xyzCoor=xyzCoor
+		self.atomVec=atomVec
+		self.atoms = len(atomVec)
+		self.atomLabels = atomLabels or range(1, self.atoms+1)
+		#assert rows of xyzCoor = length of atomlabels = length of atomVec = atoms?
+		#assert columns of xyzCoor = 3?
+
+		#map the labels to xyzCoordinates and atom types
+		self.coordDict= {}
+		self.atomTypeDict = {}
+		self.atomTypeRange = []
+		for i in range(self.atoms):
+		    self.coordDict[self.atomLabels[i]]=self.xyzCoor[i][0:3]
+		    self.atomTypeDict[self.atomLabels[i]]=self.atomVec[i]
+	#	    if (self.atomTypeRange.count(atomVec[i]) < 1):
+	#		self.atomTypeRange.append(atomVec[i])
+		
+		#find atomTypeRange
+		atomTypeRange = set(atomVec)
+
+	def getDistanceMatrix(self):
+		
+################################################################################
