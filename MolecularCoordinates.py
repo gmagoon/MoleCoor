@@ -10,6 +10,7 @@ In particular, this allows:
 
 ################################################################################
 
+import math
 
 class MolecularCoordinates:
 	"""
@@ -20,7 +21,7 @@ class MolecularCoordinates:
 	========= ==============================================================
 	`atomVec`: a vector of atomic numbers corresponding to the xyz coordinates in xyzCoor
 	`xyzCoor`: a matrix of x (column 1), y (column 2) and z (column 3) coordinates for atoms within a molecule
-	'atomLabels': (optional to specify) a vector of unique integer labels corresponding to the xyz coordinates in xyzCoor; in the absence of input, it will be assumed that the labels are 1 for the first atom, 2 for the second atom, etc.
+	'atomLabels': (optional to specify) a vector of unique integer labels from 1 to natoms corresponding to the xyz coordinates in xyzCoor; in the absence of input, it will be assumed that the labels are 1 for the first atom, 2 for the second atom, etc.
 	'atoms':   number of atoms in the molecule (based on the length of atomVec)
 	'coordDict' and 'atomTypeDict': dictionaries mapping atomLabel to coordinates and atom types, respectively
 	'atomTypeRange': the different possible values in atomVec
@@ -34,6 +35,7 @@ class MolecularCoordinates:
 		self.atomLabels = atomLabels or range(1, self.atoms+1)
 		#assert rows of xyzCoor = length of atomlabels = length of atomVec = atoms?
 		#assert columns of xyzCoor = 3?
+		#assert atomLabels contains all integers 1 through n ?
 
 		#map the labels to xyzCoordinates and atom types
 		self.coordDict= {}
@@ -42,12 +44,23 @@ class MolecularCoordinates:
 		for i in range(self.atoms):
 		    self.coordDict[self.atomLabels[i]]=self.xyzCoor[i][0:3]
 		    self.atomTypeDict[self.atomLabels[i]]=self.atomVec[i]
-	#	    if (self.atomTypeRange.count(atomVec[i]) < 1):
-	#		self.atomTypeRange.append(atomVec[i])
 		
 		#find atomTypeRange
-		atomTypeRange = set(atomVec)
+		self.atomTypeRange = set(atomVec)
 
 	def getDistanceMatrix(self):
-		
+		"""
+		Constructs a (symmetric) matrix representing distances between atoms
+
+		Atoms are indexed by atomLabels - 1
+		"""
+		natoms=self.atoms
+		for i in range(0,natoms):
+		    dist[i][i]=0.0 #diagonal elements are zero
+		    for j in range(i+1, natoms):
+			xdiff=self.coordDict[i+1][0]-self.coordDict[j+1][0]
+			ydiff=self.coordDict[i+1][1]-self.coordDict[j+1][1]
+			zdiff=self.coordDict[i+1][2]-self.coordDict[j+1][2]
+			dist[i][j]=math.sqrt(xdiff*xdiff+ydiff*ydiff+zdiff*zdiff)
+			dist[j][i]=dist[i][j]
 ################################################################################
