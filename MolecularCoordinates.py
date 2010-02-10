@@ -58,9 +58,11 @@ class MolecularCoordinates:
 		for i in range(0,natoms):
 		    dist[i][i]=0.0 #diagonal elements are zero
 		    for j in range(i+1, natoms):
-			xdiff=self.coordDict[i+1][0]-self.coordDict[j+1][0]
-			ydiff=self.coordDict[i+1][1]-self.coordDict[j+1][1]
-			zdiff=self.coordDict[i+1][2]-self.coordDict[j+1][2]
+			icoord=self.coordDict[i+1]
+			jcoord=self.coordDict[j+1]
+			xdiff=icoord[0]-jcoord[0]
+			ydiff=icoord[1]-jcoord[1]
+			zdiff=icoord[2]-jcoord[2]
 			dist[i][j]=math.sqrt(xdiff*xdiff+ydiff*ydiff+zdiff*zdiff)
 			dist[j][i]=dist[i][j]
 ################################################################################
