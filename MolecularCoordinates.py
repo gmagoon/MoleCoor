@@ -65,4 +65,6 @@ class MolecularCoordinates:
 			zdiff=icoord[2]-jcoord[2]
 			dist[i][j]=math.sqrt(xdiff*xdiff+ydiff*ydiff+zdiff*zdiff)
 			dist[j][i]=dist[i][j]
+
+		return dist
 ################################################################################
