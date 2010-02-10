@@ -12,7 +12,7 @@ In particular, this allows:
 
 import math
 
-class MolecularCoordinates:
+class MolecularGeometry:
 	"""
 	A class for representing 3D-molecular structures:
 	
@@ -55,8 +55,10 @@ class MolecularCoordinates:
 		Atoms are indexed by atomLabels - 1
 		"""
 		natoms=self.atoms
+		vec = [0.0 for i in range(natoms)]
+		dist = [vec for i in range(natoms)]
 		for i in range(0,natoms):
-		    dist[i][i]=0.0 #diagonal elements are zero
+		    #dist[i][i]=0.0 #diagonal elements are zero
 		    for j in range(i+1, natoms):
 			icoord=self.coordDict[i+1]
 			jcoord=self.coordDict[j+1]
