@@ -33,9 +33,9 @@ class MolecularGeometry:
 		self.atomVec=atomVec
 		self.atoms = len(atomVec)
 		self.atomLabels = atomLabels or range(1, self.atoms+1)
-		#assert rows of xyzCoor = length of atomlabels = length of atomVec = atoms?
-		#assert columns of xyzCoor = 3?
-		#assert atomLabels contains all integers 1 through n ?
+		#assert rows of xyzCoor = length of atomlabels = length of atomVec = atoms
+		#assert columns of xyzCoor = 3
+		#assert atomLabels contains all integers 1 through n 
 
 		#map the labels to xyzCoordinates and atom types
 		self.coordDict= {}
@@ -69,3 +69,31 @@ class MolecularGeometry:
 
 		return dist
 ################################################################################
+def checkConformationalEquivalence(mg1, mg2, Atol=-1, Rtol=-1):
+	"""Checks conformational equivalence between two molecules within a user specified tolerance
+
+	mg1 and mg2 are the two conformers to be checked for equivalence
+	note this this does not distinguish between mirror images
+	At least one of Atol and Rtol must be specified (for now, we only treat the Atol case); Rtol support will be added later
+	output: 1) a boolean indicating whether the two structures are identical within the desired tolerance
+		2) an integer describing the number of distinct atom mappings giving equivalent conformations within the specified tolerance (this can provide a measure of rotational symmetry number if mg1 and mg2 contain the same geometries; rotational symmetry number will be a factor of 2 too high if there is a non-superimposable mirror image for the molecule);
+	"""
+	#assert mg1 and mg2 contain the same number of each type of atom (and obviously the same total number of atoms)
+	#assert Atol > 0 or Rtol > 0 (and maybe also that Atol < 0 or Rtol < 0; i.e. only one of Atol and Rtol should be specified)
+
+	#generate distance matrices
+	dist1=mg1.getDistanceMatrix()
+	dist2=mg2.getDistanceMatrix()
+
+	return matchQ, nmatches
+
+#pseudocode:
+#def calculateSymmetryNumber(mg, Atol=-1, Rtol=-1):
+#   mgCopy = sufficiently deep copy of mg
+#   mgMirror = mirror image of mg (e.g. invert z coordinate or invert x, y, and z coordinates)
+#   (matchQ, nmatches) = checkConformationalEquivalence(mg, mgCopy, Atol=Atol, Rtol=Rtol)
+#   (matchQMirror, nmatchesMirror) = checkConformationalEquivalenceDistinguishingBetweenMirrorImages(mg, mgMirror, Atol=Atol, Rtol=Rtol)
+#   if matchQMirror:
+#	return nmatches/2
+#   else:
+#	return nmatches
