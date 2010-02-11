@@ -65,7 +65,7 @@ class MolecularGeometry:
 			ydiff=icoord[1]-jcoord[1]
 			zdiff=icoord[2]-jcoord[2]
 			dist[i][j]=math.sqrt(xdiff*xdiff+ydiff*ydiff+zdiff*zdiff)
-			dist[j][i]=dist[i][j]
+			dist[j][i]=dist[i][j] #matrix is symmetric
 
 		return dist
 
@@ -74,8 +74,8 @@ class MolecularGeometry:
 		Generates dictionaries mapping atom label pairs to associated distances
 
 		Outputs are heterogeneous mappings (different atom types in tuple) and homogeneous mappings (same atom types) to distances and mappings to atomTypeTuples
-		For heterogeneous mappings, the atom type tuple will be ordered with lowest # atom type first
-
+		For heterogeneous mappings, the tuples will be ordered with lowest # atom type first
+		For homogeneous mappings, the tuples will be ordered with lowest # atom label first
 		Example:
 		>>> import MolecularCoordinates
 		>>> a = MolecularCoordinates.MolecularGeometry([6,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1]])
@@ -121,7 +121,7 @@ def checkConformationalEquivalence(mg1, mg2, Atol=-1, Rtol=-1):
 	#assert Atol > 0 or Rtol > 0 (and maybe also that Atol < 0 or Rtol < 0; i.e. only one of Atol and Rtol should be specified)
 
 	#generate distance mappings
-	(hetMap, homMap, hetMapType, homMapType)=mg1.getDistanceMappings()
-	(hetMap, homMap, hetMapType, homMapType)=mg2.getDistanceMappings()
+	(hetMap1, homMap1, hetMapType1, homMapType1)=mg1.getDistanceMappings()
+	(hetMap2, homMap2, hetMapType2, homMapType2)=mg2.getDistanceMappings()
 
 	return matchQ, nmatches
