@@ -92,7 +92,7 @@ def checkConformationalEquivalence(mg1, mg2, Atol=-1, Rtol=-1):
 #   mgCopy = sufficiently deep copy of mg
 #   mgMirror = mirror image of mg (e.g. invert z coordinate or invert x, y, and z coordinates)
 #   (matchQ, nmatches) = checkConformationalEquivalence(mg, mgCopy, Atol=Atol, Rtol=Rtol)
-#   (matchQMirror, nmatchesMirror) = checkConformationalEquivalenceDistinguishingBetweenMirrorImages(mg, mgMirror, Atol=Atol, Rtol=Rtol)
+#   matchQMirror = checkConformationalEquivalenceDistinguishingBetweenMirrorImages(mg, mgMirror, Atol=Atol, Rtol=Rtol) #in this (unwritten) function, the atom mappings are assumed to be the same; Atol/Rtol may need to have different meaning here
 #   if matchQMirror:
 #	return nmatches/2
 #   else:
