@@ -182,7 +182,7 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 		mappingType = homMapType1.pop(mappingLabels)
 		homMapType2_icopy = homMapType2.copy()#make a copy of homMapType2 for the purposes of iteration (according to Python docs, iterating while adding or removing entries may cause RuntimeError)
 		for i in homMapType2_icopy.iterkeys():#search in homMapType2 for cases with the same mapping type;
-			if(homMapType2[i]==mappingType): #when they are encountered, perform a distanceMatchQ check
+			if(homMapType2[i]==mappingType): #when they are encountered, perform a distanceMatchQ check; +++*** (I think) REQUIRED CHANGE: we need to only consider mappings that are consistent with existing mappings; I think we need to reduce the set this iterates over; otherwise, I think we will get inconsistent mappings leading to routine occurences of "Algorithm error: unable to correctly match labels"
 				if(distanceMatchQ(mapping[1],homMap2[i], Atol=Atol, Rtol=Rtol)): #for each case where this returns true, check that all other het and hom mappings involving already identified atoms also satisfy the constriant, removing them in the process
 					#copy all the dictionaries
 					#+++ here, hetMaps are empty and don't need to be copied, but it is easier for consistent code to do so
