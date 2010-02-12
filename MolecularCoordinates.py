@@ -137,22 +137,21 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 
 	"""
 	#initialize boolean variable to false
-	successfulMatch = false
+	successfulMatchQ = false
 
 	#use the hetMap, if possible; if not, use homMap
 	if(len(hetMap1)>0):
 	    mapping = hetMap1.popitem()
 	    mappingType = hetMapType1.pop(mapping[0])
 	    #search in hetMapType2 for cases with the same mapping type; when they are encountered, perform a distanceMatchQ check; for each case where this returns true, check that all other het and hom mappings involving already identified atoms also satisfy the constriant; if so,  call a new instance of check distance with copies (dict.copy()) of variables with appropriately adjusted/popped values; if they return true, set successfulMatch to true
-	    return successfulMatch
-	elif:(len(homMap1)>0):
+	    return successfulMatchQ
+	elif:(len(homMap1)>0): #this should only be encountered for molecules like fullerene, graphene, hydrogen, etc. with only one type of atom
 	    #similar to hetMap case above, except there are two possible mappings on first assignment
 
-	    return successfulMatch
+	    return successfulMatchQ
 	else:
+	    #add (now complete) mapping to "global variable"
 	    return true
-
-#also, have a "global variable" that successful, complete mappings are added to (and can be counted)
 
 def distanceMatchQ(val1, val2, Atol=-1, Rtol=-1):
 	"""Checks whether two values are within acceptable deviation
