@@ -120,26 +120,30 @@ def checkConformationalEquivalence(mg1, mg2, Atol=-1, Rtol=-1):
 	#assert mg1 and mg2 contain the same number of each type of atom (and obviously the same total number of atoms)
 	#assert Atol > 0 or Rtol > 0 (and maybe also that Atol < 0 or Rtol < 0; i.e. only one of Atol and Rtol should be specified)
 
+	natoms = mg1.atoms
 	#generate distance mappings
 	(hetMap1, homMap1, hetMapType1, homMapType1)=mg1.getDistanceMappings()
 	(hetMap2, homMap2, hetMapType2, homMapType2)=mg2.getDistanceMappings()
 
 
-	matchQ = checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, hetMapType2, homMapType2, iterator, atomMaps, Atol=-1, Rtol=-1)
+	matchQ = checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, hetMapType2, homMapType2, iterator, atomMaps, natoms, Atol=-1, Rtol=-1)
 	#nmatches = size of number of mappings
 
 	return matchQ, nmatches
 
-def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, hetMapType2, homMapType2, iterator, atomMaps, Atol=-1, Rtol=-1):
+def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, hetMapType2, homMapType2, iterator, atomMaps, natoms, Atol=-1, Rtol=-1):
 	"""Recursive function to assign mappings between molecule 1 and molecule 2 based on distances
 
 
 	"""
-	#start with the hetMap, if possible; if not (e.g. for fullerene, hydrogen, graphene, etc.), use homMap
-	if(len(hetMap2)>0):
-	    return 0
+	#use the hetMap, if possible; if not, use homMap
+	if(len(hetMap1)>0):
+	    mapping = hetMap1.popitem()
+	    mappingType = hetMapType1[mapping[0]]
+	elif:(len(homMap1)>0):
+
 	else:
-	    return 0
+	    return true
 
 #also, have a "global variable" that successful, complete mappings are added to (and can be counted)
 
