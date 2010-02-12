@@ -144,7 +144,8 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 	#use the hetMap, if possible; if not, use homMap
 	if(len(hetMap1)>0):
 		mapping = hetMap1.popitem()
-		mappingType = hetMapType1.pop(mapping[0])
+		mappingLabels = mapping[0]
+		mappingType = hetMapType1.pop(mappingLabels)
 		for i in hetMapType2.iterkeys():#search in hetMapType2 for cases with the same mapping type;
 			if(hetMapType2[i]==mappingType): #when they are encountered, perform a distanceMatchQ check
 				if(distanceMatchQ(mapping[1],hetMap2[i], Atol=Atol, Rtol=Rtol)): #for each case where this returns true, check that all other het and hom mappings involving already identified atoms also satisfy the constriant, removing them in the process
@@ -157,7 +158,16 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 					homMap2C = homMap2.copy()
 					hetMapType2C = hetMapType2.copy()
 					homMapType2C = homMapType2.copy()
-					atomMapC = atomMap.copy() #needed?
+					atomMapC = atomMap.copy()
+					#update the dictionaries
+					#hetMap1 and hetMapType1 have already been popped; homMaps don't need to be popped yet
+					hetMap2C.pop(i) #pop out the assigned mapping
+					hetMap2TypeC.pop(i)
+					#update atomMapC; in particular: map atoms in molecule 1 to atoms in molecule 2; both the below if statements will hold on the first iteration (when atomMapC is empty), and exactly one should be called on subsequent iterations
+					if(!(mappingLabels[0] in atomMapC)):
+						atomMapC[mappingLabels[0]]=i[0]
+					if(!(mappingLabels[1] in atomMapC)):
+						atomMapC[mappingLabels[1]]=i[1]
 					mappedDistanceMatch = mappedDistanceMatchQ(hetMap1C, homMap1C, hetMapType1C, homMapType1C, hetMap2C, homMap2C, hetMapType2C, homMapType2C, atomMapC, Atol=Atol, Rtol=Rtol)#note that, by design, this will modify (remove elements from) the dictionaries
 					if(mappedDistanceMatch):#if so,  call a new instance of check distance with copies (dict.copy()) of variables with appropriately adjusted/popped values
 						if(checkDistance(hetMap1C, homMap1C, hetMapType1C, homMapType1C, hetMap2C, homMap2C, hetMapType2C, homMapType2C, atomMapC, Atol=Atol, Rtol=Rtol)):#if they return true, set successfulMatch to true
