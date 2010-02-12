@@ -139,9 +139,10 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 	#use the hetMap, if possible; if not, use homMap
 	if(len(hetMap1)>0):
 	    mapping = hetMap1.popitem()
-	    mappingType = hetMapType1[mapping[0]]
+	    mappingType = hetMapType1.pop(mapping[0])
+	    #search in hetMapType2 for cases with the same mapping type; when they are encountered, perform a distanceMatchQ check; for each case where this returns true, check that all other het and hom mappings involving already identified atoms also satisfy the constriant; if so,  call a new instance of check distance with copies (dict.copy()) of variables with appropriately adjusted/popped values
 	elif:(len(homMap1)>0):
-
+	    #similar to hetMap case above, except there are two possible mappings on first assignment
 	else:
 	    return true
 
