@@ -103,6 +103,8 @@ class MolecularGeometry:
 			    hetMap[(j+1,i+1)]=dist[i][j]
 			    hetMapType[(j+1,i+1)]=(atomType2,atomType1)
 
+		#an alternative: dictionary where each mapType maps to a dictionary, which in turn, maps labels to distances
+
 		return hetMap, homMap, hetMapType, homMapType
 
 
@@ -125,13 +127,13 @@ def checkConformationalEquivalence(mg1, mg2, Atol=-1, Rtol=-1):
 	(hetMap1, homMap1, hetMapType1, homMapType1)=mg1.getDistanceMappings()
 	(hetMap2, homMap2, hetMapType2, homMapType2)=mg2.getDistanceMappings()
 
-
-	matchQ = checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, hetMapType2, homMapType2, iterator, atomMaps, natoms, Atol=-1, Rtol=-1)
+	atomMap = []
+	matchQ = checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, hetMapType2, homMapType2, atomMap, Atol=-1, Rtol=-1)
 	#nmatches = size of number of mappings
 
 	return matchQ, nmatches
 
-def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, hetMapType2, homMapType2, iterator, atomMaps, natoms, Atol=-1, Rtol=-1):
+def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, hetMapType2, homMapType2, atomMap, Atol=-1, Rtol=-1):
 	"""Recursive function to assign mappings between molecule 1 and molecule 2 based on distances
 
 
@@ -141,17 +143,33 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 
 	#use the hetMap, if possible; if not, use homMap
 	if(len(hetMap1)>0):
-	    mapping = hetMap1.popitem()
-	    mappingType = hetMapType1.pop(mapping[0])
-	    #search in hetMapType2 for cases with the same mapping type; when they are encountered, perform a distanceMatchQ check; for each case where this returns true, check that all other het and hom mappings involving already identified atoms also satisfy the constriant; if so,  call a new instance of check distance with copies (dict.copy()) of variables with appropriately adjusted/popped values; if they return true, set successfulMatch to true
-	    return successfulMatchQ
-	elif:(len(homMap1)>0): #this should only be encountered for molecules like fullerene, graphene, hydrogen, etc. with only one type of atom
-	    #similar to hetMap case above, except there are two possible mappings on first assignment
-
-	    return successfulMatchQ
+		mapping = hetMap1.popitem()
+		mappingType = hetMapType1.pop(mapping[0])
+		for i in hetMapType2.iterkeys():#search in hetMapType2 for cases with the same mapping type;
+			if(hetMapType2[i]==mappingType): #when they are encountered, perform a distanceMatchQ check
+				if(distanceMatchQ(mapping[1],hetMap2[i], Atol=Atol, Rtol=Rtol)): #for each case where this returns true, check that all other het and hom mappings involving already identified atoms also satisfy the constriant, removing them in the process
+					#copy all the dictionaries
+					hetMap1C = hetMap1.copy()
+					homMap1C = homMap1.copy()
+					hetMapType1C = hetMapType1.copy()
+					homMapType1C = homMapType1.copy()
+					hetMap2C = hetMap2.copy()
+					homMap2C = homMap2.copy()
+					hetMapType2C = hetMapType2.copy()
+					homMapType2C = homMapType2.copy()
+					atomMapC = atomMap.copy() #needed?
+					mappedDistanceMatch = mappedDistanceMatchQ(hetMap1C, homMap1C, hetMapType1C, homMapType1C, hetMap2C, homMap2C, hetMapType2C, homMapType2C, atomMapC, Atol=Atol, Rtol=Rtol)#note that, by design, this will modify (remove elements from) the dictionaries
+					if(mappedDistanceMatch):#if so,  call a new instance of check distance with copies (dict.copy()) of variables with appropriately adjusted/popped values
+						if(checkDistance(hetMap1C, homMap1C, hetMapType1C, homMapType1C, hetMap2C, homMap2C, hetMapType2C, homMapType2C, atomMapC, Atol=Atol, Rtol=Rtol)):#if they return true, set successfulMatch to true
+							successfulMatchQ = true
+		return successfulMatchQ
+	elif(len(homMap1)>0):
+		#this should only be encountered for molecules like fullerene, graphene, hydrogen, etc. with only one type of atom
+		#similar to hetMap case above, except there are two possible mappings on first assignment
+		return successfulMatchQ
 	else:
-	    #add (now complete) mapping to "global variable"
-	    return true
+		#***add (now complete) mapping to "global variable"
+		return true
 
 def distanceMatchQ(val1, val2, Atol=-1, Rtol=-1):
 	"""Checks whether two values are within acceptable deviation
