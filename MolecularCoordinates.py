@@ -146,7 +146,8 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 		mapping = hetMap1.popitem()
 		mappingLabels = mapping[0]
 		mappingType = hetMapType1.pop(mappingLabels)
-		for i in hetMapType2.iterkeys():#search in hetMapType2 for cases with the same mapping type;
+		hetMapType2_icopy = hetMapType2.copy()#make a copy of hetMapType2 for the purposes of iteration (according to Python docs, iterating while adding or removing entries may cause RuntimeError)
+		for i in hetMapType2_icopy.iterkeys():#search in hetMapType2 for cases with the same mapping type;
 			if(hetMapType2[i]==mappingType): #when they are encountered, perform a distanceMatchQ check
 				if(distanceMatchQ(mapping[1],hetMap2[i], Atol=Atol, Rtol=Rtol)): #for each case where this returns true, check that all other het and hom mappings involving already identified atoms also satisfy the constriant, removing them in the process
 					#copy all the dictionaries
@@ -161,21 +162,52 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 					atomMapC = atomMap.copy()
 					#update the dictionaries
 					#hetMap1 and hetMapType1 have already been popped; homMaps don't need to be popped yet
-					hetMap2C.pop(i) #pop out the assigned mapping
-					hetMap2TypeC.pop(i)
+					del hetMap2C[i] #pop out the assigned mapping
+					del hetMap2TypeC[i]
 					#update atomMapC; in particular: map atoms in molecule 1 to atoms in molecule 2; both the below if statements will hold on the first iteration (when atomMapC is empty), and exactly one should be called on subsequent iterations
 					if(!(mappingLabels[0] in atomMapC)):
 						atomMapC[mappingLabels[0]]=i[0]
 					if(!(mappingLabels[1] in atomMapC)):
 						atomMapC[mappingLabels[1]]=i[1]
 					mappedDistanceMatch = mappedDistanceMatchQ(hetMap1C, homMap1C, hetMapType1C, homMapType1C, hetMap2C, homMap2C, hetMapType2C, homMapType2C, atomMapC, Atol=Atol, Rtol=Rtol)#note that, by design, this will modify (remove elements from) the dictionaries
-					if(mappedDistanceMatch):#if so,  call a new instance of check distance with copies (dict.copy()) of variables with appropriately adjusted/popped values
+					if(mappedDistanceMatch):#if so,  call a new instance of checkDistance with copies (dict.copy()) of variables with appropriately adjusted/popped values
 						if(checkDistance(hetMap1C, homMap1C, hetMapType1C, homMapType1C, hetMap2C, homMap2C, hetMapType2C, homMapType2C, atomMapC, Atol=Atol, Rtol=Rtol)):#if they return true, set successfulMatch to true
 							successfulMatchQ = true
 		return successfulMatchQ
 	elif(len(homMap1)>0):
 		#this should only be encountered for molecules like fullerene, graphene, hydrogen, etc. with only one type of atom
-		#similar to hetMap case above, except there are two possible mappings on first assignment
+		#similar to hetMap case above(differences indicated by +++), except there are two possible mappings on first assignment
+		mapping = homMap1.popitem()
+		mappingLabels = mapping[0]
+		mappingType = homMapType1.pop(mappingLabels)
+		homMapType2_icopy = homMapType2.copy()#make a copy of homMapType2 for the purposes of iteration (according to Python docs, iterating while adding or removing entries may cause RuntimeError)
+		for i in homMapType2_icopy.iterkeys():#search in homMapType2 for cases with the same mapping type;
+			if(homMapType2[i]==mappingType): #when they are encountered, perform a distanceMatchQ check
+				if(distanceMatchQ(mapping[1],homMap2[i], Atol=Atol, Rtol=Rtol)): #for each case where this returns true, check that all other het and hom mappings involving already identified atoms also satisfy the constriant, removing them in the process
+					#copy all the dictionaries
+					#+++ here, hetMaps are empty and don't need to be copied, but it is easier for consistent code to do so
+					hetMap1C = hetMap1.copy()
+					homMap1C = homMap1.copy()
+					hetMapType1C = hetMapType1.copy()
+					homMapType1C = homMapType1.copy()
+					hetMap2C = hetMap2.copy()
+					homMap2C = homMap2.copy()
+					hetMapType2C = hetMapType2.copy()
+					homMapType2C = homMapType2.copy()
+					atomMapC1 = atomMap.copy()
+					#update the dictionaries
+					#homMap1 and homMapType1 have already been popped; hetMaps are empty
+					del homMap2C[i] #pop out the assigned mapping
+					del homMap2TypeC[i]
+					#update atomMapC; in particular: map atoms in molecule 1 to atoms in molecule 2; both the below if statements will hold on the first iteration (when atomMapC is empty), and exactly one should be called on subsequent iterations
+					if(!(mappingLabels[0] in atomMapC)):
+						atomMapC[mappingLabels[0]]=i[0]
+					if(!(mappingLabels[1] in atomMapC)):
+						atomMapC[mappingLabels[1]]=i[1]
+					mappedDistanceMatch = mappedDistanceMatchQ(hetMap1C, homMap1C, hetMapType1C, homMapType1C, hetMap2C, homMap2C, hetMapType2C, homMapType2C, atomMapC, Atol=Atol, Rtol=Rtol)#note that, by design, this will modify (remove elements from) the dictionaries
+					if(mappedDistanceMatch):#if so,  call a new instance of checkDistance with copies (dict.copy()) of variables with appropriately adjusted/popped values
+						if(checkDistance(hetMap1C, homMap1C, hetMapType1C, homMapType1C, hetMap2C, homMap2C, hetMapType2C, homMapType2C, atomMapC, Atol=Atol, Rtol=Rtol)):#if they return true, set successfulMatch to true
+							successfulMatchQ = true
 		return successfulMatchQ
 	else:
 		#***add (now complete) mapping to "global variable"
@@ -190,4 +222,37 @@ def distanceMatchQ(val1, val2, Atol=-1, Rtol=-1):
 	    return true
 	else:
 	    return false
-	
+
+def mappedDistanceMatchQ(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, hetMapType2, homMapType2, atomMap, Atol=-1, Rtol=-1):
+	"""Given atomMap, checks whether distances in hetMap2 and homMap2 are consistent (within specified tol) with hetMap1; mappings are removed from the dictionaries as they are found to match
+
+	atomMap is not modified
+	"""
+	if(len(atomMap) < 3): #if there are only two mappings (as there will be on the first iteration), there cannot be anything else to check (the two mappings will already have been checked)
+		return true
+	else:
+		hetMap1_icopy = hetMap1.copy()#make a copy of hetMap1 for the purposes of iteration (according to Python docs, iterating while adding or removing entries may cause RuntimeError)
+		for i in hetMap1_icopy.iterkeys():#first go through hetMap1
+			if((i[0] in atomMap) && (i[1] in atomMap)):
+				targetLabels = (atomMap(i[0]), atomMap(i[1]))
+				if(!distanceMatchQ(hetMap1[i], hetMap2[targetLabels], Atol=Atol, Rtol=Rtol)):
+				    return false
+				else:
+				    del hetMap1[i]
+				    del hetMapType1[i]
+				    del hetMap2[targetLabels]
+				    del hetMapType2[i]
+
+		homMap1_icopy = homMap1.copy()#make a copy of homMap1 for the purposes of iteration (according to Python docs, iterating while adding or removing entries may cause RuntimeError)
+		for i in homMap1_icopy.iterkeys():#next go through the homogeneous pairings; note that this, along with above line is basically a copy of the above so we should eventually make a function for it, and call it twice with two different arguments
+			if((i[0] in atomMap) && (i[1] in atomMap)):
+				targetLabels = (atomMap(i[0]), atomMap(i[1]))
+				if(!distanceMatchQ(homMap1[i], homMap2[targetLabels], Atol=Atol, Rtol=Rtol)):
+				    return false
+				else:
+				    del homMap1[i]
+				    del homMapType1[i]
+				    del homMap2[targetLabels]
+				    del homMapType2[i]
+
+		return true #return true if the threshhold has not been exceeded
