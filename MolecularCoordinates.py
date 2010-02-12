@@ -124,4 +124,32 @@ def checkConformationalEquivalence(mg1, mg2, Atol=-1, Rtol=-1):
 	(hetMap1, homMap1, hetMapType1, homMapType1)=mg1.getDistanceMappings()
 	(hetMap2, homMap2, hetMapType2, homMapType2)=mg2.getDistanceMappings()
 
+
+	matchQ = checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, hetMapType2, homMapType2, iterator, atomMaps, Atol=-1, Rtol=-1)
+	#nmatches = size of number of mappings
+
 	return matchQ, nmatches
+
+def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, hetMapType2, homMapType2, iterator, atomMaps, Atol=-1, Rtol=-1):
+	"""Recursive function to assign mappings between molecule 1 and molecule 2 based on distances
+
+
+	"""
+	#start with the hetMap, if possible; if not (e.g. for fullerene, hydrogen, graphene, etc.), use homMap
+	if(len(hetMap2)>0):
+	    return 0
+	else:
+	    return 0
+
+#also, have a "global variable" that successful, complete mappings are added to (and can be counted)
+
+def distanceMatchQ(val1, val2, Atol=-1, Rtol=-1):
+	"""Checks whether two values are within acceptable deviation
+
+	Currently, this is only written for Atol
+	"""
+	if(abs(val2-val1)< Atol):
+	    return true
+	else:
+	    return false
+	
