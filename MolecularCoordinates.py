@@ -178,7 +178,7 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 						#update the dictionaries
 						#hetMap1 and hetMapType1 have already been popped; homMaps don't need to be popped yet
 						del hetMap2C[i] #pop out the assigned mapping
-						del hetMap2TypeC[i]
+						del hetMapType2C[i]
 						#update atomMapC; in particular: map atoms in molecule 1 to atoms in molecule 2; both the below if statements will hold on the first iteration (when atomMapC is empty), and exactly one should be called on subsequent iterations
 						if(mappingLabels[0] not in atomMapC):
 							atomMapC[mappingLabels[0]]=i[0]
@@ -227,7 +227,7 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 						#update the dictionaries
 						#homMap1 and homMapType1 have already been popped; hetMaps are empty
 						del homMap2C[i] #pop out the assigned mapping
-						del homMap2TypeC[i]
+						del homMapType2C[i]
 						#+++look at atomMapC to see if any mappings already exist (at most one mapping should exist); no mappings will be found on the first iteration leading to the need for considering two possible mappings
 						if((mappingLabels[0] not in atomMapC) and (mappingLabels[1] not in atomMapC)):
 							#in this case, we need to do two recursive calls, so we must make extra copies
@@ -241,7 +241,7 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 							homMapType2D = homMapType2.copy()
 							atomMapD = atomMap.copy()
 							del homMap2D[i] #pop out the assigned mapping for the second copy
-							del homMap2TypeD[i]
+							del homMapType2D[i]
 							#assign the two possible mappings
 							atomMapC[mappingLabels[0]]=i[0]#mapping 1
 							atomMapC[mappingLabels[1]]=i[1]
