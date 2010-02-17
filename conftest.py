@@ -4,7 +4,7 @@ import MolecularCoordinates
 
 class  ConfTestCase(unittest.TestCase):
 
-	def simpleConfTest(self):
+	def testSimpleConf(self):
 		a = MolecularCoordinates.MolecularGeometry([6,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1]])
 		b = MolecularCoordinates.MolecularGeometry([6,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1]])
 		q = MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=0.01)
