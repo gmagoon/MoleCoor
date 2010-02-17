@@ -330,3 +330,8 @@ def mappedDistanceMatchQ(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, ho
 
 		return True #return true if the threshhold has not been exceeded
 	    
+if __name__ == '__main__':
+	a = MolecularGeometry([6,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1]])
+	b = MolecularGeometry([6,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1]])
+	q = checkConformationalEquivalence(b, a, Atol=0.01)
+	print q
