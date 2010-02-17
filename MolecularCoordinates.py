@@ -151,11 +151,11 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 		else:
 			for i in hetMap1.iterkeys():
 				if(i[0] in atomMap):
-					mapping =  hetMap1.pop(i)
+					mapping =  (i, hetMap1.pop(i))
 					hetMap2TargetLabel = atomMap[i[0]]
 					break
 				elif(i[1] in atomMap):
-					mapping = hetMap1.pop(i)
+					mapping = (i, hetMap1.pop(i))
 					hetMap2TargetLabel = atomMap[i[1]]
 					break
 		mappingLabels = mapping[0]
@@ -199,11 +199,11 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 		else:
 			for i in homMap1.iterkeys():
 				if(i[0] in atomMap):
-					mapping =  homMap1.pop(i)
+					mapping =  (i, homMap1.pop(i))
 					homMap2TargetLabel = atomMap[i[0]]
 					break
 				elif(i[1] in atomMap):
-					mapping = homMap1.pop(i)
+					mapping = (i, homMap1.pop(i))
 					homMap2TargetLabel = atomMap[i[1]]
 					break
 		mappingLabels = mapping[0]
