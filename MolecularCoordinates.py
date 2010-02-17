@@ -130,7 +130,8 @@ def checkConformationalEquivalence(mg1, mg2, Atol=-1, Rtol=-1):
 	atomMap = []
 	matchQ = checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, hetMapType2, homMapType2, atomMap, Atol=-1, Rtol=-1)
 	#nmatches = size of number of mappings
-
+	nmatches = 'This still needs to be set appropriately'
+	
 	return matchQ, nmatches
 
 def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, hetMapType2, homMapType2, atomMap, Atol=-1, Rtol=-1):
