@@ -191,80 +191,94 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 	elif(len(homMap1)>0):
 		#this should only be encountered for molecules like fullerene, graphene, hydrogen, etc. with only one type of atom
 		#similar to hetMap case above(differences indicated by +++), except there are two possible mappings on first assignment
-		mapping = homMap1.popitem()
+		mapping = homMap1.popitem()#for the first iteration, when atomMap is empty, pull an arbitrary item from hetMap1; on subsequent iterations, make sure one (it should be exactly one by the design of the algorithm) of the elements is in atom map
+		if(len(atomMap==0)):#if this is the first iteration:
+			mapping = homMap1.popitem()
+			homMap2TargetLabel = -1 #-1 corresponds to first iteration, where we don't have a particular target atom
+		else:
+			for i in homMap1.iterkeys():
+				if(i[0] in atomMap):
+					mapping =  homMap1.pop(i)
+					homMap2TargetLabel = atomMap[i[0]]
+					break
+				elif(i[1] in atomMap):
+					mapping = homMap1.pop(i)
+					homMap2TargetLabel = atomMap[i[1]]
+					break
 		mappingLabels = mapping[0]
 		mappingType = homMapType1.pop(mappingLabels)
 		homMapType2_icopy = homMapType2.copy()#make a copy of homMapType2 for the purposes of iteration (according to Python docs, iterating while adding or removing entries may cause RuntimeError)
 		for i in homMapType2_icopy.iterkeys():#search in homMapType2 for cases with the same mapping type;
-			if(homMapType2[i]==mappingType): #when they are encountered, perform a distanceMatchQ check; +++*** (I think) REQUIRED CHANGE: we need to only consider mappings that are consistent with existing mappings; I think we need to reduce the set this iterates over; otherwise, I think we will get inconsistent mappings leading to routine occurences of "Algorithm error: unable to correctly match labels"
-				if(distanceMatchQ(mapping[1],homMap2[i], Atol=Atol, Rtol=Rtol)): #for each case where this returns true, check that all other het and hom mappings involving already identified atoms also satisfy the constriant, removing them in the process
-					#copy all the dictionaries
-					#+++ here, hetMaps are empty and don't need to be copied, but it is easier for consistent code to do so
-					hetMap1C = hetMap1.copy()
-					homMap1C = homMap1.copy()
-					hetMapType1C = hetMapType1.copy()
-					homMapType1C = homMapType1.copy()
-					hetMap2C = hetMap2.copy()
-					homMap2C = homMap2.copy()
-					hetMapType2C = hetMapType2.copy()
-					homMapType2C = homMapType2.copy()
-					atomMapC = atomMap.copy()
-					#update the dictionaries
-					#homMap1 and homMapType1 have already been popped; hetMaps are empty
-					del homMap2C[i] #pop out the assigned mapping
-					del homMap2TypeC[i]
-					#+++look at atomMapC to see if any mappings already exist (at most one mapping should exist); no mappings will be found on the first iteration, and possibly on subsequent iterations, leading to the need for considering two possible mappings; (***we could modify so that exactly one atom is new on subsequent iterations...this would PROBABLY be better/faster
-					if((mappingLabels[0] not in atomMapC) and (mappingLabels[1] not in atomMapC)):
-						#in this case, we need to do two recursive calls, so we must make extra copies
-						hetMap1D = hetMap1.copy()
-						homMap1D = homMap1.copy()
-						hetMapType1D = hetMapType1.copy()
-						homMapType1D = homMapType1.copy()
-						hetMap2D = hetMap2.copy()
-						homMap2D = homMap2.copy()
-						hetMapType2D = hetMapType2.copy()
-						homMapType2D = homMapType2.copy()
-						atomMapD = atomMap.copy()
-						del homMap2D[i] #pop out the assigned mapping for the second copy
-						del homMap2TypeD[i]
-						#assign the two possible mappings
-						atomMapC[mappingLabels[0]]=i[0]#mapping 1
-						atomMapC[mappingLabels[1]]=i[1]
-						atomMapD[mappingLabels[0]]=i[1]#mapping 2
-						atomMapD[mappingLabels[1]]=i[0]
-						mappedDistanceMatch1 = mappedDistanceMatchQ(hetMap1C, homMap1C, hetMapType1C, homMapType1C, hetMap2C, homMap2C, hetMapType2C, homMapType2C, atomMapC, Atol=Atol, Rtol=Rtol)#note that, by design, this will modify (remove elements from) the dictionaries
-						mappedDistanceMatch2 = mappedDistanceMatchQ(hetMap1D, homMap1D, hetMapType1D, homMapType1D, hetMap2D, homMap2D, hetMapType2D, homMapType2D, atomMapD, Atol=Atol, Rtol=Rtol)#note that, by design, this will modify (remove elements from) the dictionaries
-						if(mappedDistanceMatch1):#call a new instance of checkDistance with copies (dict.copy()) of variables with appropriately adjusted/popped values
-							if(checkDistance(hetMap1C, homMap1C, hetMapType1C, homMapType1C, hetMap2C, homMap2C, hetMapType2C, homMapType2C, atomMapC, Atol=Atol, Rtol=Rtol)):#if they return true, set successfulMatch to true
-								successfulMatchQ = true
-						if(mappedDistanceMatch2):#call a new instance of checkDistance with copies (dict.copy()) of variables with appropriately adjusted/popped values
-							if(checkDistance(hetMap1D, homMap1D, hetMapType1D, homMapType1D, hetMap2D, homMap2D, hetMapType2D, homMapType2D, atomMapD, Atol=Atol, Rtol=Rtol)):#if they return true, set successfulMatch to true
-								successfulMatchQ = true
-					elif(mappingLabels[0] not in atomMapC):#label 0 is the new one; label 1 is already mapped
-						if(atomMapC[mappingLabels[1]]==i[1]):#we need to figure out which atom in the tuple is already mapped
-							atomMapC[mappingLabels[0]]=i[0]
-						elif(atomMapC[mappingLabels[1]]==i[0]):
-							atomMapC[mappingLabels[0]]=i[1]
-						else:
-							print "Algorithm error: unable to correctly match labels"
-						mappedDistanceMatch = mappedDistanceMatchQ(hetMap1C, homMap1C, hetMapType1C, homMapType1C, hetMap2C, homMap2C, hetMapType2C, homMapType2C, atomMapC, Atol=Atol, Rtol=Rtol)#note that, by design, this will modify (remove elements from) the dictionaries
-						if(mappedDistanceMatch):#if so,  call a new instance of checkDistance with copies (dict.copy()) of variables with appropriately adjusted/popped values
-							if(checkDistance(hetMap1C, homMap1C, hetMapType1C, homMapType1C, hetMap2C, homMap2C, hetMapType2C, homMapType2C, atomMapC, Atol=Atol, Rtol=Rtol)):#if they return true, set successfulMatch to true
-								successfulMatchQ = true
-					elif(mappingLabels[1] not in atomMapC): #label 1 is the new one; label 0 is already mapped
-						if(atomMapC[mappingLabels[0]]==i[1]):#we need to figure out which atom in the tuple is already mapped
-							atomMapC[mappingLabels[1]]=i[0]
-						elif(atomMapC[mappingLabels[0]]==i[0]):
+			if(homMapType2[i]==mappingType): #when they are encountered, perform a distanceMatchQ check
+				if(homMap2TargetLabel==-1 or homMap2TargetLabel==i[0] or homMap2TargetLabel==i[1]): # this line checks whether the target atom label is consistent with previously established mappings
+					if(distanceMatchQ(mapping[1],homMap2[i], Atol=Atol, Rtol=Rtol)): #for each case where this returns true, check that all other het and hom mappings involving already identified atoms also satisfy the constriant, removing them in the process
+						#copy all the dictionaries
+						#+++ here, hetMaps are empty and don't need to be copied, but it is easier for consistent code to do so
+						hetMap1C = hetMap1.copy()
+						homMap1C = homMap1.copy()
+						hetMapType1C = hetMapType1.copy()
+						homMapType1C = homMapType1.copy()
+						hetMap2C = hetMap2.copy()
+						homMap2C = homMap2.copy()
+						hetMapType2C = hetMapType2.copy()
+						homMapType2C = homMapType2.copy()
+						atomMapC = atomMap.copy()
+						#update the dictionaries
+						#homMap1 and homMapType1 have already been popped; hetMaps are empty
+						del homMap2C[i] #pop out the assigned mapping
+						del homMap2TypeC[i]
+						#+++look at atomMapC to see if any mappings already exist (at most one mapping should exist); no mappings will be found on the first iteration leading to the need for considering two possible mappings
+						if((mappingLabels[0] not in atomMapC) and (mappingLabels[1] not in atomMapC)):
+							#in this case, we need to do two recursive calls, so we must make extra copies
+							hetMap1D = hetMap1.copy()
+							homMap1D = homMap1.copy()
+							hetMapType1D = hetMapType1.copy()
+							homMapType1D = homMapType1.copy()
+							hetMap2D = hetMap2.copy()
+							homMap2D = homMap2.copy()
+							hetMapType2D = hetMapType2.copy()
+							homMapType2D = homMapType2.copy()
+							atomMapD = atomMap.copy()
+							del homMap2D[i] #pop out the assigned mapping for the second copy
+							del homMap2TypeD[i]
+							#assign the two possible mappings
+							atomMapC[mappingLabels[0]]=i[0]#mapping 1
 							atomMapC[mappingLabels[1]]=i[1]
-						else:
-							print "Algorithm error: unable to correctly match labels"
-						mappedDistanceMatch = mappedDistanceMatchQ(hetMap1C, homMap1C, hetMapType1C, homMapType1C, hetMap2C, homMap2C, hetMapType2C, homMapType2C, atomMapC, Atol=Atol, Rtol=Rtol)#note that, by design, this will modify (remove elements from) the dictionaries
-						if(mappedDistanceMatch):#if so,  call a new instance of checkDistance with copies (dict.copy()) of variables with appropriately adjusted/popped values
-							if(checkDistance(hetMap1C, homMap1C, hetMapType1C, homMapType1C, hetMap2C, homMap2C, hetMapType2C, homMapType2C, atomMapC, Atol=Atol, Rtol=Rtol)):#if they return true, set successfulMatch to true
-								successfulMatchQ = true
+							atomMapD[mappingLabels[0]]=i[1]#mapping 2
+							atomMapD[mappingLabels[1]]=i[0]
+							mappedDistanceMatch1 = mappedDistanceMatchQ(hetMap1C, homMap1C, hetMapType1C, homMapType1C, hetMap2C, homMap2C, hetMapType2C, homMapType2C, atomMapC, Atol=Atol, Rtol=Rtol)#note that, by design, this will modify (remove elements from) the dictionaries
+							mappedDistanceMatch2 = mappedDistanceMatchQ(hetMap1D, homMap1D, hetMapType1D, homMapType1D, hetMap2D, homMap2D, hetMapType2D, homMapType2D, atomMapD, Atol=Atol, Rtol=Rtol)#note that, by design, this will modify (remove elements from) the dictionaries
+							if(mappedDistanceMatch1):#call a new instance of checkDistance with copies (dict.copy()) of variables with appropriately adjusted/popped values
+								if(checkDistance(hetMap1C, homMap1C, hetMapType1C, homMapType1C, hetMap2C, homMap2C, hetMapType2C, homMapType2C, atomMapC, Atol=Atol, Rtol=Rtol)):#if they return true, set successfulMatch to true
+									successfulMatchQ = true
+							if(mappedDistanceMatch2):#call a new instance of checkDistance with copies (dict.copy()) of variables with appropriately adjusted/popped values
+								if(checkDistance(hetMap1D, homMap1D, hetMapType1D, homMapType1D, hetMap2D, homMap2D, hetMapType2D, homMapType2D, atomMapD, Atol=Atol, Rtol=Rtol)):#if they return true, set successfulMatch to true
+									successfulMatchQ = true
+						elif(mappingLabels[0] not in atomMapC):#label 0 is the new one; label 1 is already mapped
+							if(atomMapC[mappingLabels[1]]==i[1]):#we need to figure out which atom in the tuple is already mapped
+								atomMapC[mappingLabels[0]]=i[0]
+							elif(atomMapC[mappingLabels[1]]==i[0]):
+								atomMapC[mappingLabels[0]]=i[1]
+							else:
+								print "Algorithm error: unable to correctly match labels"
+							mappedDistanceMatch = mappedDistanceMatchQ(hetMap1C, homMap1C, hetMapType1C, homMapType1C, hetMap2C, homMap2C, hetMapType2C, homMapType2C, atomMapC, Atol=Atol, Rtol=Rtol)#note that, by design, this will modify (remove elements from) the dictionaries
+							if(mappedDistanceMatch):#if so,  call a new instance of checkDistance with copies (dict.copy()) of variables with appropriately adjusted/popped values
+								if(checkDistance(hetMap1C, homMap1C, hetMapType1C, homMapType1C, hetMap2C, homMap2C, hetMapType2C, homMapType2C, atomMapC, Atol=Atol, Rtol=Rtol)):#if they return true, set successfulMatch to true
+									successfulMatchQ = true
+						elif(mappingLabels[1] not in atomMapC): #label 1 is the new one; label 0 is already mapped
+							if(atomMapC[mappingLabels[0]]==i[1]):#we need to figure out which atom in the tuple is already mapped
+								atomMapC[mappingLabels[1]]=i[0]
+							elif(atomMapC[mappingLabels[0]]==i[0]):
+								atomMapC[mappingLabels[1]]=i[1]
+							else:
+								print "Algorithm error: unable to correctly match labels"
+							mappedDistanceMatch = mappedDistanceMatchQ(hetMap1C, homMap1C, hetMapType1C, homMapType1C, hetMap2C, homMap2C, hetMapType2C, homMapType2C, atomMapC, Atol=Atol, Rtol=Rtol)#note that, by design, this will modify (remove elements from) the dictionaries
+							if(mappedDistanceMatch):#if so,  call a new instance of checkDistance with copies (dict.copy()) of variables with appropriately adjusted/popped values
+								if(checkDistance(hetMap1C, homMap1C, hetMapType1C, homMapType1C, hetMap2C, homMap2C, hetMapType2C, homMapType2C, atomMapC, Atol=Atol, Rtol=Rtol)):#if they return true, set successfulMatch to true
+									successfulMatchQ = true
 
-					else:#this should not happen
-						print "Algorithm error: two atoms already mapped when at least one should not be mapped"
+						else:#this should not happen
+							print "Algorithm error: two atoms already mapped when at least one should not be mapped"
 
 		return successfulMatchQ
 	else:
