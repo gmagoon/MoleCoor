@@ -9,10 +9,14 @@ class  ConfTestCase(unittest.TestCase):
 		b = MolecularCoordinates.MolecularGeometry([6,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1]])
 		q = MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=0.01)
 		print q
-		#assert x != y;
+		assert 1 != 2;
 		#self.assertEqual(x, y, "Msg");
-		self.fail("TODO: Write test")
+		#self.fail("TODO: Write test")
 
 if __name__ == '__main__':
+	a = MolecularCoordinates.MolecularGeometry([6,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1]])
+	b = MolecularCoordinates.MolecularGeometry([6,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1]])
+	q = MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=0.01)
+	print q
 	unittest.main()
 
