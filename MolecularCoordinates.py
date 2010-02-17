@@ -144,7 +144,7 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 	#use the hetMap, if possible; if not, use homMap
 	if(len(hetMap1)>0):
 		#for the first iteration, when atomMap is empty, pull an arbitrary item from hetMap1; on subsequent iterations, make sure one (it should be exactly one by the design of the algorithm) of the elements is in atom map
-		if(len(atomMap==0)):#if this is the first iteration:
+		if(len(atomMap)==0):#if this is the first iteration:
 			mapping = hetMap1.popitem()
 			hetMap2TargetLabel = -1 #-1 corresponds to first iteration, where we don't have a particular target atom
 		else:
@@ -192,7 +192,7 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 		#this should only be encountered for molecules like fullerene, graphene, hydrogen, etc. with only one type of atom
 		#similar to hetMap case above(differences indicated by +++), except there are two possible mappings on first assignment
 		mapping = homMap1.popitem()#for the first iteration, when atomMap is empty, pull an arbitrary item from hetMap1; on subsequent iterations, make sure one (it should be exactly one by the design of the algorithm) of the elements is in atom map
-		if(len(atomMap==0)):#if this is the first iteration:
+		if(len(atomMap)==0):#if this is the first iteration:
 			mapping = homMap1.popitem()
 			homMap2TargetLabel = -1 #-1 corresponds to first iteration, where we don't have a particular target atom
 		else:
