@@ -319,7 +319,10 @@ def mappedDistanceMatchQ(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, ho
 		homMap1_icopy = homMap1.copy()#make a copy of homMap1 for the purposes of iteration (according to Python docs, iterating while adding or removing entries may cause RuntimeError)
 		for i in homMap1_icopy.iterkeys():#next go through the homogeneous pairings; note that this, along with above line is basically a copy of the above so we should eventually make a function for it, and call it twice with two different arguments
 			if((i[0] in atomMap) and (i[1] in atomMap)):
-				targetLabels = (atomMap[i[0]], atomMap[i[1]])
+				if (atomMap[i[0]] < atomMap[i[1]]):#for homogeneous case, these must be sorted to the "canonical" order (1st is lowest label number, 2nd is highest label number)
+					targetLabels = (atomMap[i[0]], atomMap[i[1]])
+				else:
+					targetLabels = (atomMap[i[1]], atomMap[i[0]])
 				if(not distanceMatchQ(homMap1[i], homMap2[targetLabels], Atol=Atol, Rtol=Rtol)):
 				    return False
 				else:
