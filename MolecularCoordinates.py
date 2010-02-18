@@ -163,7 +163,7 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 		hetMapType2_icopy = hetMapType2.copy()#make a copy of hetMapType2 for the purposes of iteration (according to Python docs, iterating while adding or removing entries may cause RuntimeError)
 		for i in hetMapType2_icopy.iterkeys():#search in hetMapType2 for cases with the same mapping type and a pre-established atom correspondence
 			if(hetMapType2[i]==mappingType): #when they are encountered, perform a distanceMatchQ check; this line does the mapping type check
-				if(hetMap2TargetLabel==-1 or hetMap2TargetLabel==i[0] or hetMap2TargetLabel==i[1]): # this line checks whether the target atom label is consistent with previously established mappings
+				if(hetMap2TargetLabel==-1 or hetMap2TargetLabel==i[0] or hetMap2TargetLabel==i[1]): # this line checks whether the target atom label is consistent with previously established mappings; ***try switching the order of this check with previous check for speed-up
 					if(distanceMatchQ(mapping[1],hetMap2[i], Atol=Atol, Rtol=Rtol)): #for each case where this is true, check that all other het and hom mappings involving already identified atoms also satisfy the constriant, removing them in the process
 						#copy all the dictionaries
 						hetMap1C = hetMap1.copy()
