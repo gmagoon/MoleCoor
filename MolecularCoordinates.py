@@ -128,7 +128,7 @@ def checkConformationalEquivalence(mg1, mg2, Atol=-1, Rtol=-1):
 	(hetMap2, homMap2, hetMapType2, homMapType2)=mg2.getDistanceMappings()
 
 	atomMap = {}
-	matchQ = checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, hetMapType2, homMapType2, atomMap, Atol=Atol, Rtol=Atol)
+	matchQ = checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, hetMapType2, homMapType2, atomMap, Atol=Atol, Rtol=Rtol)
 	#nmatches = size of number of mappings
 	nmatches = 'This still needs to be set appropriately'
 	
@@ -335,7 +335,7 @@ def mappedDistanceMatchQ(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, ho
 		return True #return true if the threshhold has not been exceeded
 	    
 if __name__ == '__main__':
-	a = MolecularGeometry([6,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1]])
-	b = MolecularGeometry([6,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1]])
-	q = checkConformationalEquivalence(b, a, Atol=0.01)
+	a = MolecularGeometry([1,1,1,1,1,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[0,1,1],[1,0,1],[1,1,0],[1,1,1]])
+	b = MolecularGeometry([1,1,1,1,1,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[0,1,1],[1,0,1],[1,1,0],[1,1,1]])
+	(q, n) = checkConformationalEquivalence(b, a, Atol=0.01)
 	print q
