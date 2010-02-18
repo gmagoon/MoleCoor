@@ -315,7 +315,7 @@ def mappedDistanceMatchQ(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, ho
 				    del hetMap1[i]
 				    del hetMapType1[i]
 				    del hetMap2[targetLabels]
-				    del hetMapType2[i]
+				    del hetMapType2[targetLabels]
 
 		homMap1_icopy = homMap1.copy()#make a copy of homMap1 for the purposes of iteration (according to Python docs, iterating while adding or removing entries may cause RuntimeError)
 		for i in homMap1_icopy.iterkeys():#next go through the homogeneous pairings; note that this, along with above line is basically a copy of the above so we should eventually make a function for it, and call it twice with two different arguments
@@ -330,7 +330,7 @@ def mappedDistanceMatchQ(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, ho
 				    del homMap1[i]
 				    del homMapType1[i]
 				    del homMap2[targetLabels]
-				    del homMapType2[i]
+				    del homMapType2[targetLabels]
 
 		return True #return true if the threshhold has not been exceeded
 	    
