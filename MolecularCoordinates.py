@@ -284,6 +284,7 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 		return successfulMatchQ
 	else:
 		#***add (now complete) mapping to "global variable"
+		print atomMap
 		return True
 
 def distanceMatchQ(val1, val2, Atol=-1, Rtol=-1):
