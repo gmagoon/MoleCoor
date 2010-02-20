@@ -82,22 +82,17 @@ if __name__ == '__main__':
 import conftest
 	"""
 	test1 = "(q, n) = conftest.SimpleHetConf()"
-#	test1 = """
-#	a = MolecularCoordinates.MolecularGeometry([6,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1]])
-#	b = MolecularCoordinates.MolecularGeometry([6,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1]])
-#	(q, n) = MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=0.01)
-#	"""
-	test2 = """
-	a = MolecularCoordinates.MolecularGeometry([1,1,1,1,1,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[0,1,1],[1,0,1],[1,1,0],[1,1,1]])
-	b = MolecularCoordinates.MolecularGeometry([1,1,1,1,1,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[0,1,1],[1,0,1],[1,1,0],[1,1,1]])
-	(q, n) = MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=0.01)
-	"""
+	test2 = "(q, n) = conftest.SimpleHomConf()"
+	test3 = "(q, n) = conftest.MirrorImageConf()"
 	t = Timer(test1,startup)
 	times = t.repeat(repeat=5,number=1000)
 	print "test1 took %.3f seconds (%s)"%(min(times), times)
 	t = Timer(test2, startup)
 	times = t.repeat(repeat=5,number=10)
 	print "test2 took %.3f seconds (%s)"%(min(times), times)
+	t = Timer(test3, startup)
+	times = t.repeat(repeat=5,number=100)
+	print "test3 took %.3f seconds (%s)"%(min(times), times)
 	print "\nContinuing with tests..."
 	unittest.main(testRunner = unittest.TextTestRunner(verbosity=2))
 
