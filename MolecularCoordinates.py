@@ -122,7 +122,6 @@ def checkConformationalEquivalence(mg1, mg2, Atol=-1, Rtol=-1):
 	#assert mg1 and mg2 contain the same number of each type of atom (and obviously the same total number of atoms)
 	#assert Atol > 0 or Rtol > 0 (and maybe also that Atol < 0 or Rtol < 0; i.e. only one of Atol and Rtol should be specified)
 
-	natoms = mg1.atoms
 	#generate distance mappings
 	(hetMap1, homMap1, hetMapType1, homMapType1)=mg1.getDistanceMappings()
 	(hetMap2, homMap2, hetMapType2, homMapType2)=mg2.getDistanceMappings()
@@ -339,3 +338,33 @@ if __name__ == '__main__':
 	b = MolecularGeometry([1,1,1,1,1,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[0,1,1],[1,0,1],[1,1,0],[1,1,1]])
 	(q, n) = checkConformationalEquivalence(b, a, Atol=0.01)
 	print q
+
+def calcDistanceDeviationsGivenMapping(mg1, mg2, atomMap):
+	"""Calculate atom-to-atom distance deviations between two molecules, given an atom mapping
+
+	mg1 and mg2 are the two conformers to be compared
+	atomMap is a dictionary mapping mg1 atom labels to mg2 atom labels
+	output: a dictionary indicating the distance deviations between mg1 and mg2 (more specifically d1-d2, where d1 and d2 are the atom-to-atom distances in mg1 and mg2, respectively) for each atom pair (keys correspond to mg1 labels)
+	"""
+	#assert mg1 and mg2 contain the same number of each type of atom (and obviously the same total number of atoms)
+
+	#generate distance mappings
+	(hetMap1, homMap1, hetMapType1, homMapType1)=mg1.getDistanceMappings()
+	(hetMap2, homMap2, hetMapType2, homMapType2)=mg2.getDistanceMappings()
+
+	distDev = {}
+	#first, go through the hetMaps
+	for i in hetMap1:
+		distDev[i]=hetMap1[i]-hetMap2[(atomMap[i[0]],atomMap[i[1]])]
+	#second, go through the homMaps
+	for i in homMap1:
+		j0 = atomMap[i[0]]
+		j1 = atomMap[i[1]]
+		if j0 < j1:
+			distDev[i]=homMap1[i]-homMap2[(j0,j1)]
+		else:
+			distDev[i]=homMap1[i]-homMap2[(j1,j0)]
+
+	print distDev
+
+	return distDev
