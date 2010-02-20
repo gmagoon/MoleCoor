@@ -114,8 +114,8 @@ class  ConfTestCase(unittest.TestCase):
 		(distDevAbs,distDevRel) = MolecularCoordinates.calcDistanceDeviationsGivenMapping(a, b, atomMap)
 		distDevAbsMax = MolecularCoordinates.dictionaryMaxAbs(distDevAbs)
 		distDevRelMax = MolecularCoordinates.dictionaryMaxAbs(distDevRel)
-		print distDevAbsMax
-		print distDevRelMax
+		self.assertAlmostEqual(distDevAbsMax, 0.000528777418128, 5)
+		self.assertAlmostEqual(distDevRelMax, 0.000145546853437, 5)
 
 def SimpleHetConf():
 	a = MolecularCoordinates.MolecularGeometry([6,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1]])
