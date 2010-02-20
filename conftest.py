@@ -111,7 +111,12 @@ class  ConfTestCase(unittest.TestCase):
 		b = MolecularCoordinates.MolecularGeometry(ba,bc)
 		#atomMap = {1:1, 2:2, 3:3, 4:4, 5:5, 6:6, 7:7, 8:8, 9:9, 10:10, 11:11, 12:12, 13:13, 14:14} #a naive mapping
 		atomMap = {1: 1, 2: 3, 3: 2, 4: 4, 5: 5, 6: 7, 7: 6, 8: 8, 9: 9, 10: 10, 11: 11, 12: 13, 13: 12, 14: 14} #a "correct" mapping
-		distDev = MolecularCoordinates.calcDistanceDeviationsGivenMapping(a, b, atomMap)
+		distDevAbs = MolecularCoordinates.calcAbsoluteDistanceDeviationsGivenMapping(a, b, atomMap)
+		distDevRel = MolecularCoordinates.calcRelativeDistanceDeviationsGivenMapping(a, b, atomMap)
+		distDevAbsMax = MolecularCoordinates.dictionaryMaxAbs(distDevAbs)
+		distDevRelMax = MolecularCoordinates.dictionaryMaxAbs(distDevRel)
+		print distDevAbsMax
+		print distDevRelMax
 
 def SimpleHetConf():
 	a = MolecularCoordinates.MolecularGeometry([6,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1]])
