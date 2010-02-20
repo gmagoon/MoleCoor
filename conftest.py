@@ -110,7 +110,7 @@ class  ConfTestCase(unittest.TestCase):
 		a = MolecularCoordinates.MolecularGeometry(aa,ac)
 		b = MolecularCoordinates.MolecularGeometry(ba,bc)
 		#atomMap = {1:1, 2:2, 3:3, 4:4, 5:5, 6:6, 7:7, 8:8, 9:9, 10:10, 11:11, 12:12, 13:13, 14:14} #a naive mapping
-		atomMap = {1: 1, 2: 3, 3: 2, 4: 4, 5: 5, 6: 7, 7: 6, 8: 8, 9: 9, 10: 10, 11: 11, 12: 13, 13: 12, 14: 14} #a "correct" mapping
+		atomMap = {1: 1, 2: 3, 3: 2, 4: 4, 5: 5, 6: 7, 7: 6, 8: 8, 9: 9, 10: 10, 11: 11, 12: 13, 13: 12, 14: 14} #a "correct" mapping (there is also one other "correct" mapping)
 		(distDevAbs,distDevRel) = MolecularCoordinates.calcDistanceDeviationsGivenMapping(a, b, atomMap)
 		distDevAbsMax = MolecularCoordinates.dictionaryMaxAbs(distDevAbs)
 		distDevRelMax = MolecularCoordinates.dictionaryMaxAbs(distDevRel)
