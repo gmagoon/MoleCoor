@@ -13,7 +13,7 @@ class  ConfTestCase(unittest.TestCase):
 		b = MolecularCoordinates.MolecularGeometry([6,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1]])
 		(q, n) = MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=0.01)
 		self.assertEqual(q, True)
-		self.assertEqual(n, 6)
+#		self.assertEqual(n, 6)
 
 	def testSimpleHomConf(self):
 		""" A simple test (using the same molecule) of the homogenous case
@@ -24,60 +24,110 @@ class  ConfTestCase(unittest.TestCase):
 		b = MolecularCoordinates.MolecularGeometry([1,1,1,1,1,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[0,1,1],[1,0,1],[1,1,0],[1,1,1]])
 		(q, n) = MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=0.01)
 		self.assertEqual(q, True)
-		self.assertEqual(n, 48) #I belive the answer is 48, though I am not positive off the top of my head, and it could be higher
+#		self.assertEqual(n, 48) #I belive the answer is 48, though I am not positive off the top of my head, and it could be higher
 
 	def testMirrorImageConf(self):
 		""" A test of mirror images
 
-		Mirror image conformations of gauche n-butane
+		Mirror image conformations of gauche n-butane (each independently optimized using PM3 in Gaussian03 using default convergence criteria)
 		"""
-		#a = MolecularCoordinates.MolecularGeometry([1,1,1,1,1,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[0,1,1],[1,0,1],[1,1,0],[1,1,1]])
-		#b = MolecularCoordinates.MolecularGeometry([1,1,1,1,1,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[0,1,1],[1,0,1],[1,1,0],[1,1,1]])
-		(q, n) = MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=0.01)
+		ac =    [[-1.5846,   -0.5216,    0.1338],
+			[-1.1512,   -1.5146,   -0.0477 ],
+			[-1.7781,   -0.4440,    1.2120 ],
+			[-2.5555,   -0.4907,   -0.3770 ],
+			[-0.6751,    0.5855,   -0.3509 ],
+			[-1.1705,    1.5633,   -0.1896 ],
+			[-0.5293,    0.5028,   -1.4463 ],
+			[ 0.6751,    0.5854,    0.3509 ],
+			[ 1.1705,    1.5633,    0.1895 ],
+			[ 0.5294,    0.5028,    1.4463 ],
+			[ 1.5846,   -0.5216,   -0.1338 ],
+			[ 2.5554,   -0.4908,    0.3772 ],
+			[ 1.1510,   -1.5146,    0.0475 ],
+			[ 1.7783,   -0.4438,   -1.2120]] 
+		aa = [6, 1, 1, 1, 6, 1, 1, 6, 1, 1, 6, 1, 1, 1]
+		bc =  [[  -1.5845,   -0.5216,   -0.1338],
+			   [-1.7784,   -0.4438,   -1.2120 ],
+			   [-1.1509,   -1.5146,    0.0474 ],
+			   [-2.5553,   -0.4910,    0.3773 ],
+			   [-0.6751,    0.5855,    0.3508 ],
+			   [-0.5293,    0.5028,    1.4463 ],
+			   [-1.1705,    1.5634,    0.1895 ],
+			   [ 0.6751,    0.5855,   -0.3508 ],
+			   [ 1.1705,    1.5633,   -0.1893 ],
+			   [ 0.5294,    0.5030,   -1.4463 ],
+			   [ 1.5845,   -0.5216,    0.1338 ],
+			   [ 1.1510,   -1.5146,   -0.0478 ],
+			   [ 2.5555,   -0.4908,   -0.3770 ],
+			   [ 1.7780,   -0.4441,    1.2121 ]]
+		ba = [6, 1, 1, 1, 6, 1, 1, 6, 1, 1, 6, 1, 1, 1]
+		a = MolecularCoordinates.MolecularGeometry(aa,ac)
+		b = MolecularCoordinates.MolecularGeometry(ba,bc)
+		(q, n) = MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=0.001)
 		self.assertEqual(q, True)
 
-	def testBuckminsterfullerene(self):
-		""" A test of Buckminsterfullerene with itself
-
-
-		"""
-		#a = MolecularCoordinates.MolecularGeometry([1,1,1,1,1,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[0,1,1],[1,0,1],[1,1,0],[1,1,1]])
-		#b = MolecularCoordinates.MolecularGeometry([1,1,1,1,1,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[0,1,1],[1,0,1],[1,1,0],[1,1,1]])
-		(q, n) = MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=0.01)
-		self.assertEqual(q, True)
-
-	def testDistinctJP10Conf(self):
-		""" A test of distinct JP-10 conformations
-
-		The conformations differ in the puckering of one of the rings
-		"""
-		#a = MolecularCoordinates.MolecularGeometry([1,1,1,1,1,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[0,1,1],[1,0,1],[1,1,0],[1,1,1]])
-		#b = MolecularCoordinates.MolecularGeometry([1,1,1,1,1,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[0,1,1],[1,0,1],[1,1,0],[1,1,1]])
-		(q, n) = MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=0.05)
-		self.assertEqual(q, False)
-
-	def testOptConf(self):
-		""" A test of equivalent conformations obtained from optimization with different potential energy calculation methods
-
-		"""
-		#a = MolecularCoordinates.MolecularGeometry([1,1,1,1,1,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[0,1,1],[1,0,1],[1,1,0],[1,1,1]])
-		#b = MolecularCoordinates.MolecularGeometry([1,1,1,1,1,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[0,1,1],[1,0,1],[1,1,0],[1,1,1]])
-		#alternatively, we could play around with Atol/Rtol to see how tight they need to be
-		(q, n) = MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=0.05)
-		print q
-
-	def testInitialConditionConf(self):
-		""" A test of equivalent conformations of a large molecule optimized with different initial conditions
-
-		The same potential energy calculation method is used in both cases. Default convergence criterion of Gaussian03 are used.
-		"""
-		#a = MolecularCoordinates.MolecularGeometry([1,1,1,1,1,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[0,1,1],[1,0,1],[1,1,0],[1,1,1]])
-		#b = MolecularCoordinates.MolecularGeometry([1,1,1,1,1,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[0,1,1],[1,0,1],[1,1,0],[1,1,1]])
-		#it may be appropriate to use Rtol here, particularly for a large molecule
-		(q, n) = MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=0.05)
-		self.assertEqual(q, True)
+#	def testBuckminsterfullerene(self):
+#		""" A test of Buckminsterfullerene with itself
+#
+#
+#		"""
+#		#a = MolecularCoordinates.MolecularGeometry([1,1,1,1,1,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[0,1,1],[1,0,1],[1,1,0],[1,1,1]])
+#		#b = MolecularCoordinates.MolecularGeometry([1,1,1,1,1,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[0,1,1],[1,0,1],[1,1,0],[1,1,1]])
+#		(q, n) = MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=0.01)
+#		self.assertEqual(q, True)
+#
+#	def testDistinctJP10Conf(self):
+#		""" A test of distinct JP-10 conformations
+#
+#		The conformations differ in the puckering of one of the rings
+#		"""
+#		#a = MolecularCoordinates.MolecularGeometry([1,1,1,1,1,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[0,1,1],[1,0,1],[1,1,0],[1,1,1]])
+#		#b = MolecularCoordinates.MolecularGeometry([1,1,1,1,1,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[0,1,1],[1,0,1],[1,1,0],[1,1,1]])
+#		(q, n) = MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=0.05)
+#		self.assertEqual(q, False)
+#
+#	def testOptConf(self):
+#		""" A test of equivalent conformations of a large molecule obtained from optimization with different potential energy calculation methods
+#
+#		"""
+#		#a = MolecularCoordinates.MolecularGeometry([1,1,1,1,1,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[0,1,1],[1,0,1],[1,1,0],[1,1,1]])
+#		#b = MolecularCoordinates.MolecularGeometry([1,1,1,1,1,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[0,1,1],[1,0,1],[1,1,0],[1,1,1]])
+#		#alternatively, we could play around with Atol/Rtol to see how tight they need to be
+#		(q, n) = MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=0.05)
+#		print q
+#
+#	def testInitialConditionConf(self):
+#		""" A test of equivalent conformations of a large molecule optimized with different initial conditions
+#
+#		The same potential energy calculation method is used in both cases. Default convergence criterion of Gaussian03 are used.
+#		"""
+#		#a = MolecularCoordinates.MolecularGeometry([1,1,1,1,1,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[0,1,1],[1,0,1],[1,1,0],[1,1,1]])
+#		#b = MolecularCoordinates.MolecularGeometry([1,1,1,1,1,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[0,1,1],[1,0,1],[1,1,0],[1,1,1]])
+#		#it may be appropriate to use Rtol here, particularly for a large molecule
+#		(q, n) = MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=0.05)
+#		self.assertEqual(q, True)
 
 
 if __name__ == '__main__':
+	from timeit import Timer
+	startup = """import MolecularCoordinates
+	"""
+	test1 = """
+	a = MolecularCoordinates.MolecularGeometry([6,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1]])
+	b = MolecularCoordinates.MolecularGeometry([6,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1]])
+	(q, n) = MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=0.01)
+	"""
+	test2 = """
+	a = MolecularCoordinates.MolecularGeometry([1,1,1,1,1,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[0,1,1],[1,0,1],[1,1,0],[1,1,1]])
+	b = MolecularCoordinates.MolecularGeometry([1,1,1,1,1,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[0,1,1],[1,0,1],[1,1,0],[1,1,1]])
+	(q, n) = MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=0.01)
+	"""
+	t = Timer(test1,startup)
+	times = t.repeat(repeat=5,number=1000)
+	print "test1 took %.3f seconds (%s)"%(min(times), times)
+	t = Timer(test2, startup)
+	times = t.repeat(repeat=5,number=10)
+	print "test2 took %.3f seconds (%s)"%(min(times), times)
+	print "\nContinuing with tests..."
 	unittest.main(testRunner = unittest.TextTestRunner(verbosity=2))
 
