@@ -363,7 +363,7 @@ def calcDistanceDeviationsGivenMapping(mg1, mg2, atomMap):
 		distDevRel[i]=(d1-d2)/min(d1,d2)
 	#second, go through the homMaps
 	for i in homMap1:
-		d1 = homMap[i]
+		d1 = homMap1[i]
 		j0 = atomMap[i[0]]
 		j1 = atomMap[i[1]]
 		if j0 < j1:
@@ -374,3 +374,9 @@ def calcDistanceDeviationsGivenMapping(mg1, mg2, atomMap):
 		distDevRel[i]=(d1-d2)/min(d1,d2)
 
 	return distDevAbs, distDevRel
+
+def dictionaryMaxAbs(dict):
+    """Calculates the maximum absolute value among values in a dictionary"""
+    #would it be faster to iterate through values, taking absolute value for each one and comparing to maximum found so far?
+    v = dict.values()
+    return max(abs(min(v)),abs(max(v)))
