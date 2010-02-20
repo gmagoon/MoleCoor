@@ -10,7 +10,6 @@ class  ConfTestCase(unittest.TestCase):
 
 		A pyramidal form for CH3
 		"""
-#		import conftest
 		(q, n) = conftest.SimpleHetConf()
 		self.assertEqual(q, True)
 #		self.assertEqual(n, 6)
@@ -20,7 +19,6 @@ class  ConfTestCase(unittest.TestCase):
 
 		A cube of hydrogens
 		"""
-#		import conftest
 		(q, n) = conftest.SimpleHetConf()
 		self.assertEqual(q, True)
 #		self.assertEqual(n, 48) #I belive the answer is 48, though I am not positive off the top of my head, and it could be higher
@@ -30,7 +28,6 @@ class  ConfTestCase(unittest.TestCase):
 
 		Mirror image conformations of gauche n-butane (each independently optimized using PM3 in Gaussian03 using default convergence criteria)
 		"""
-#		import conftest
 		(q, n) = conftest.MirrorImageConf()
 		self.assertEqual(q, True)
 
