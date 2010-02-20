@@ -148,7 +148,7 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 			mapping = hetMap1.popitem()
 			hetMap2TargetLabel = -1 #-1 corresponds to first iteration, where we don't have a particular target atom
 		else:
-			for i in hetMap1.iterkeys():
+			for i in hetMap1:
 				if(i[0] in atomMap):
 					mapping =  (i, hetMap1.pop(i))
 					hetMap2TargetLabel = atomMap[i[0]]
@@ -160,7 +160,7 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 		mappingLabels = mapping[0]
 		mappingType = hetMapType1.pop(mappingLabels)
 		hetMapType2_icopy = hetMapType2.copy()#make a copy of hetMapType2 for the purposes of iteration (according to Python docs, iterating while adding or removing entries may cause RuntimeError)
-		for i in hetMapType2_icopy.iterkeys():#search in hetMapType2 for cases with the same mapping type and a pre-established atom correspondence
+		for i in hetMapType2_icopy:#search in hetMapType2 for cases with the same mapping type and a pre-established atom correspondence
 			if(hetMapType2[i]==mappingType): #when they are encountered, perform a distanceMatchQ check; this line does the mapping type check
 				if(hetMap2TargetLabel==-1 or hetMap2TargetLabel==i[0] or hetMap2TargetLabel==i[1]): # this line checks whether the target atom label is consistent with previously established mappings; ***try switching the order of this check with previous check for speed-up
 					if(distanceMatchQ(mapping[1],hetMap2[i], Atol=Atol, Rtol=Rtol)): #for each case where this is true, check that all other het and hom mappings involving already identified atoms also satisfy the constriant, removing them in the process
@@ -196,7 +196,7 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 			mapping = homMap1.popitem()
 			homMap2TargetLabel = -1 #-1 corresponds to first iteration, where we don't have a particular target atom
 		else:
-			for i in homMap1.iterkeys():
+			for i in homMap1:
 				if(i[0] in atomMap):
 					mapping =  (i, homMap1.pop(i))
 					homMap2TargetLabel = atomMap[i[0]]
@@ -208,7 +208,7 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 		mappingLabels = mapping[0]
 		mappingType = homMapType1.pop(mappingLabels)
 		homMapType2_icopy = homMapType2.copy()#make a copy of homMapType2 for the purposes of iteration (according to Python docs, iterating while adding or removing entries may cause RuntimeError)
-		for i in homMapType2_icopy.iterkeys():#search in homMapType2 for cases with the same mapping type;
+		for i in homMapType2_icopy:#search in homMapType2 for cases with the same mapping type;
 			if(homMapType2[i]==mappingType): #when they are encountered, perform a distanceMatchQ check
 				if(homMap2TargetLabel==-1 or homMap2TargetLabel==i[0] or homMap2TargetLabel==i[1]): # this line checks whether the target atom label is consistent with previously established mappings
 					if(distanceMatchQ(mapping[1],homMap2[i], Atol=Atol, Rtol=Rtol)): #for each case where this returns true, check that all other het and hom mappings involving already identified atoms also satisfy the constriant, removing them in the process
@@ -305,7 +305,7 @@ def mappedDistanceMatchQ(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, ho
 		return True
 	else:
 		hetMap1_icopy = hetMap1.copy()#make a copy of hetMap1 for the purposes of iteration (according to Python docs, iterating while adding or removing entries may cause RuntimeError)
-		for i in hetMap1_icopy.iterkeys():#first go through hetMap1
+		for i in hetMap1_icopy:#first go through hetMap1
 			if((i[0] in atomMap) and (i[1] in atomMap)):
 				targetLabels = (atomMap[i[0]], atomMap[i[1]])
 				if(not distanceMatchQ(hetMap1[i], hetMap2[targetLabels], Atol=Atol, Rtol=Rtol)):
@@ -317,7 +317,7 @@ def mappedDistanceMatchQ(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, ho
 				    del hetMapType2[targetLabels]
 
 		homMap1_icopy = homMap1.copy()#make a copy of homMap1 for the purposes of iteration (according to Python docs, iterating while adding or removing entries may cause RuntimeError)
-		for i in homMap1_icopy.iterkeys():#next go through the homogeneous pairings; note that this, along with above line is basically a copy of the above so we should eventually make a function for it, and call it twice with two different arguments
+		for i in homMap1_icopy:#next go through the homogeneous pairings; note that this, along with above line is basically a copy of the above so we should eventually make a function for it, and call it twice with two different arguments
 			if((i[0] in atomMap) and (i[1] in atomMap)):
 				if (atomMap[i[0]] < atomMap[i[1]]):#for homogeneous case, these must be sorted to the "canonical" order (1st is lowest label number, 2nd is highest label number)
 					targetLabels = (atomMap[i[0]], atomMap[i[1]])
