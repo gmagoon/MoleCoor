@@ -21,7 +21,7 @@ class  ConfTestCase(unittest.TestCase):
 		"""
 		(q, n) = conftest.SimpleHomConf()
 		self.assertEqual(q, True)
-		self.assertEqual(len(n), 48) #I belive the answer is 48, though I am not positive off the top of my head, and it could be higher
+		self.assertEqual(len(n), 48) #I believe the answer is 48, though I am not positive off the top of my head, and it could be higher
 
 	def testMirrorImageConf(self):
 		""" A test of mirror images
@@ -30,7 +30,7 @@ class  ConfTestCase(unittest.TestCase):
 		"""
 		(q, n) = conftest.MirrorImageConf()
 		self.assertEqual(q, True)
-		self.assertEqual(len(n), 2) #I belive the correct answer is 2
+		self.assertEqual(len(n), 2) #I believe the correct answer is 2
 
 #	def testBuckminsterfullerene(self):
 #		""" A test of Buckminsterfullerene with itself
