@@ -187,8 +187,8 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 						if(mappedDistanceMatch):#if so,  call a new instance of checkDistance with copies (dict.copy()) of variables with appropriately adjusted/popped values
 							if(checkDistance(hetMap1C, homMap1C, hetMapType1C, homMapType1C, hetMap2C, homMap2C, hetMapType2C, homMapType2C, atomMapC, successfulAtomMapList, Atol=Atol, Rtol=Rtol)):#if they return true, set successfulMatch to true
 								successfulMatchQ = True
-		if(not successfulMatchQ):
-			print atomMap
+		#if(not successfulMatchQ):
+		#	print atomMap
 		return successfulMatchQ, successfulAtomMapList
 	elif(len(homMap1)>0):
 		#this should only be encountered for molecules like fullerene, graphene, hydrogen, etc. with only one type of atom
@@ -281,8 +281,8 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 
 						else:#this should not happen
 							print "Algorithm error: two atoms already mapped when at least one should not be mapped"
-		if(not successfulMatchQ):
-			print atomMap
+		#if(not successfulMatchQ):
+		#	print atomMap
 		return successfulMatchQ, successfulAtomMapList
 	else: #when both lists are empty, a successful mapping has been found and we return true
 		successfulAtomMapList.append(atomMap)
