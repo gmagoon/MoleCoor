@@ -340,12 +340,6 @@ def mappedDistanceMatchQ(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, ho
 				    del homMapType2[targetLabels]
 
 		return True #return true if the threshhold has not been exceeded
-	    
-if __name__ == '__main__':
-	a = MolecularGeometry([1,1,1,1,1,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[0,1,1],[1,0,1],[1,1,0],[1,1,1]])
-	b = MolecularGeometry([1,1,1,1,1,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[0,1,1],[1,0,1],[1,1,0],[1,1,1]])
-	(q, n) = checkConformationalEquivalence(b, a, Atol=0.01)
-	print q
 
 def calcDistanceDeviationsGivenMapping(mg1, mg2, atomMap):
 	"""Calculate absolute and relative atom-to-atom distance deviations between two molecules, given an atom mapping
