@@ -117,7 +117,7 @@ def checkConformationalEquivalence(mg1, mg2, Atol=-1, Rtol=-1):
 	note this this does not distinguish between mirror images
 	At least one of Atol and Rtol must be specified (for now, we only treat the Atol case); Rtol support will be added later
 	output: 1) a boolean indicating whether the two structures are identical within the desired tolerance
-		2) an integer describing the number of distinct atom mappings giving equivalent conformations within the specified tolerance 
+		2) a list containing distinct atom mappings giving equivalent conformations within the specified tolerance
 	"""
 	#assert mg1 and mg2 contain the same number of each type of atom (and obviously the same total number of atoms)
 	#assert Atol > 0 or Rtol > 0 (and maybe also that Atol < 0 or Rtol < 0; i.e. only one of Atol and Rtol should be specified)
@@ -127,13 +127,13 @@ def checkConformationalEquivalence(mg1, mg2, Atol=-1, Rtol=-1):
 	(hetMap2, homMap2, hetMapType2, homMapType2)=mg2.getDistanceMappings()
 
 	atomMap = {}
-	matchQ = checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, hetMapType2, homMapType2, atomMap, Atol=Atol, Rtol=Rtol)
-	#nmatches = size of number of mappings
-	nmatches = 'This still needs to be set appropriately'
-	
-	return matchQ, nmatches
+	successfulAtomMapList = []
 
-def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, hetMapType2, homMapType2, atomMap, Atol=-1, Rtol=-1):
+	(matchQ, matches) = checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, hetMapType2, homMapType2, atomMap, successfulAtomMapList, Atol=Atol, Rtol=Rtol)
+	
+	return matchQ, matches
+
+def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, hetMapType2, homMapType2, atomMap, successfulAtomMapList, Atol=-1, Rtol=-1):
 	"""Recursive function to assign mappings between molecule 1 and molecule 2 based on distances
 
 
@@ -185,9 +185,9 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 							atomMapC[mappingLabels[1]]=i[1]
 						mappedDistanceMatch = mappedDistanceMatchQ(hetMap1C, homMap1C, hetMapType1C, homMapType1C, hetMap2C, homMap2C, hetMapType2C, homMapType2C, atomMapC, Atol=Atol, Rtol=Rtol)#note that, by design, this will modify (remove elements from) the dictionaries
 						if(mappedDistanceMatch):#if so,  call a new instance of checkDistance with copies (dict.copy()) of variables with appropriately adjusted/popped values
-							if(checkDistance(hetMap1C, homMap1C, hetMapType1C, homMapType1C, hetMap2C, homMap2C, hetMapType2C, homMapType2C, atomMapC, Atol=Atol, Rtol=Rtol)):#if they return true, set successfulMatch to true
+							if(checkDistance(hetMap1C, homMap1C, hetMapType1C, homMapType1C, hetMap2C, homMap2C, hetMapType2C, homMapType2C, atomMapC, successfulAtomMapList, Atol=Atol, Rtol=Rtol)):#if they return true, set successfulMatch to true
 								successfulMatchQ = True
-		return successfulMatchQ
+		return successfulMatchQ, successfulAtomMapList
 	elif(len(homMap1)>0):
 		#this should only be encountered for molecules like fullerene, graphene, hydrogen, etc. with only one type of atom
 		#similar to hetMap case above(differences indicated by +++), except there are two possible mappings on first assignment
@@ -249,10 +249,10 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 							mappedDistanceMatch1 = mappedDistanceMatchQ(hetMap1C, homMap1C, hetMapType1C, homMapType1C, hetMap2C, homMap2C, hetMapType2C, homMapType2C, atomMapC, Atol=Atol, Rtol=Rtol)#note that, by design, this will modify (remove elements from) the dictionaries
 							mappedDistanceMatch2 = mappedDistanceMatchQ(hetMap1D, homMap1D, hetMapType1D, homMapType1D, hetMap2D, homMap2D, hetMapType2D, homMapType2D, atomMapD, Atol=Atol, Rtol=Rtol)#note that, by design, this will modify (remove elements from) the dictionaries
 							if(mappedDistanceMatch1):#call a new instance of checkDistance with copies (dict.copy()) of variables with appropriately adjusted/popped values
-								if(checkDistance(hetMap1C, homMap1C, hetMapType1C, homMapType1C, hetMap2C, homMap2C, hetMapType2C, homMapType2C, atomMapC, Atol=Atol, Rtol=Rtol)):#if they return true, set successfulMatch to true
+								if(checkDistance(hetMap1C, homMap1C, hetMapType1C, homMapType1C, hetMap2C, homMap2C, hetMapType2C, homMapType2C, atomMapC, successfulAtomMapList, Atol=Atol, Rtol=Rtol)):#if they return true, set successfulMatch to true
 									successfulMatchQ = True
 							if(mappedDistanceMatch2):#call a new instance of checkDistance with copies (dict.copy()) of variables with appropriately adjusted/popped values
-								if(checkDistance(hetMap1D, homMap1D, hetMapType1D, homMapType1D, hetMap2D, homMap2D, hetMapType2D, homMapType2D, atomMapD, Atol=Atol, Rtol=Rtol)):#if they return true, set successfulMatch to true
+								if(checkDistance(hetMap1D, homMap1D, hetMapType1D, homMapType1D, hetMap2D, homMap2D, hetMapType2D, homMapType2D, atomMapD, successfulAtomMapList, Atol=Atol, Rtol=Rtol)):#if they return true, set successfulMatch to true
 									successfulMatchQ = True
 						elif(mappingLabels[0] not in atomMapC):#label 0 is the new one; label 1 is already mapped
 							if(atomMapC[mappingLabels[1]]==i[1]):#we need to figure out which atom in the tuple is already mapped
@@ -263,7 +263,7 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 								print "Algorithm error: unable to correctly match labels"
 							mappedDistanceMatch = mappedDistanceMatchQ(hetMap1C, homMap1C, hetMapType1C, homMapType1C, hetMap2C, homMap2C, hetMapType2C, homMapType2C, atomMapC, Atol=Atol, Rtol=Rtol)#note that, by design, this will modify (remove elements from) the dictionaries
 							if(mappedDistanceMatch):#if so,  call a new instance of checkDistance with copies (dict.copy()) of variables with appropriately adjusted/popped values
-								if(checkDistance(hetMap1C, homMap1C, hetMapType1C, homMapType1C, hetMap2C, homMap2C, hetMapType2C, homMapType2C, atomMapC, Atol=Atol, Rtol=Rtol)):#if they return true, set successfulMatch to true
+								if(checkDistance(hetMap1C, homMap1C, hetMapType1C, homMapType1C, hetMap2C, homMap2C, hetMapType2C, homMapType2C, atomMapC, successfulAtomMapList, Atol=Atol, Rtol=Rtol)):#if they return true, set successfulMatch to true
 									successfulMatchQ = True
 						elif(mappingLabels[1] not in atomMapC): #label 1 is the new one; label 0 is already mapped
 							if(atomMapC[mappingLabels[0]]==i[1]):#we need to figure out which atom in the tuple is already mapped
@@ -274,17 +274,16 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 								print "Algorithm error: unable to correctly match labels"
 							mappedDistanceMatch = mappedDistanceMatchQ(hetMap1C, homMap1C, hetMapType1C, homMapType1C, hetMap2C, homMap2C, hetMapType2C, homMapType2C, atomMapC, Atol=Atol, Rtol=Rtol)#note that, by design, this will modify (remove elements from) the dictionaries
 							if(mappedDistanceMatch):#if so,  call a new instance of checkDistance with copies (dict.copy()) of variables with appropriately adjusted/popped values
-								if(checkDistance(hetMap1C, homMap1C, hetMapType1C, homMapType1C, hetMap2C, homMap2C, hetMapType2C, homMapType2C, atomMapC, Atol=Atol, Rtol=Rtol)):#if they return true, set successfulMatch to true
+								if(checkDistance(hetMap1C, homMap1C, hetMapType1C, homMapType1C, hetMap2C, homMap2C, hetMapType2C, homMapType2C, atomMapC, successfulAtomMapList, Atol=Atol, Rtol=Rtol)):#if they return true, set successfulMatch to true
 									successfulMatchQ = True
 
 						else:#this should not happen
 							print "Algorithm error: two atoms already mapped when at least one should not be mapped"
 
-		return successfulMatchQ
+		return successfulMatchQ, successfulAtomMapList
 	else:
-		#***add (now complete) mapping to "global variable"
-		#print atomMap
-		return True
+		successfulAtomMapList.append(atomMap)
+		return True, successfulAtomMapList
 
 def distanceMatchQ(val1, val2, Atol=-1, Rtol=-1):
 	"""Checks whether two values are within acceptable deviation
