@@ -32,16 +32,14 @@ class  ConfTestCase(unittest.TestCase):
 		self.assertEqual(q, True)
 		self.assertEqual(len(n), 2) #I believe the correct answer is 2
 
-#	def testBuckminsterfullerene(self):
-#		""" A test of Buckminsterfullerene with itself
-#
-#
-#		"""
-#		#a = MolecularCoordinates.MolecularGeometry([1,1,1,1,1,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[0,1,1],[1,0,1],[1,1,0],[1,1,1]])
-#		#b = MolecularCoordinates.MolecularGeometry([1,1,1,1,1,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[0,1,1],[1,0,1],[1,1,0],[1,1,1]])
-#		(q, n) = MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=0.01)
-#		self.assertEqual(q, True)
-#
+	def testBuckminsterfullerene(self):
+		""" A test of Buckminsterfullerene with itself
+
+		"""
+		(q, n) = conftest.Buckminsterfullerene()
+		self.assertEqual(q, True)
+		self.assertEqual(len(n), 120) #A result of 120 seems reasonable (symmetry number is 60)
+
 #	def testDistinctJP10Conf(self):
 #		""" A test of distinct JP-10 conformations
 #
@@ -163,6 +161,11 @@ def MirrorImageConf():
 	a = MolecularCoordinates.MolecularGeometry(aa,ac)
 	b = MolecularCoordinates.MolecularGeometry(ba,bc)
 	return MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=0.001)
+
+def Buckminsterfullerene():
+	a = MolecularCoordinates.readMOLFile('c60_c.mol')
+	b = MolecularCoordinates.readMOLFile('c60_c.mol')
+	return MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=0.01)
 
 if __name__ == '__main__':
 	from timeit import Timer
