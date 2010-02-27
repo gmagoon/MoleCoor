@@ -408,8 +408,6 @@ def readMOLFile(filename):
 		atomTypes[i] = atomicSymbolToNumber(splitLine[3])
 
 	f.close() #close the file
-	print atomCoords
-	print atomTypes
 
 	return MolecularGeometry(atomTypes,atomCoords) #return the MolecularGeometry object
 
