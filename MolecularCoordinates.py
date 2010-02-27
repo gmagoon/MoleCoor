@@ -378,7 +378,49 @@ def calcDistanceDeviationsGivenMapping(mg1, mg2, atomMap):
 	return distDevAbs, distDevRel
 
 def dictionaryMaxAbs(dict):
-    """Calculates the maximum absolute value among values in a dictionary"""
-    #would it be faster to iterate through values, taking absolute value for each one and comparing to maximum found so far?
-    v = dict.values()
-    return max(abs(min(v)),abs(max(v)))
+	"""Calculates the maximum absolute value among values in a dictionary"""
+	#would it be faster to iterate through values, taking absolute value for each one and comparing to maximum found so far?
+	v = dict.values()
+	return max(abs(min(v)),abs(max(v)))
+
+
+def readMolFile(filename):
+	"""Given a mole file, constructs a MolecularGeometry object
+
+	Currently only supports C, H, and O atoms
+	"""
+	f = open(filename, 'r')
+	#first three lines are irrelevant
+	f.readline()
+	f.readline()
+	f.readline()
+
+	n = int(f.readline().split()[0])#read the number of atoms
+	#initialize the atomTypes and atomCoords arrays
+	#atomCoords = [[0.0 for j in range(3)] for i in range(n)]
+	atomCoords = [[] for i in range(n)]
+	atomTypes = [0 for i in range(n)]
+
+	#read info from the mole file into the arrays
+	for i in range(n):
+		splitLine = f.readline().split()
+		atomCoords[i] = [float(splitLine[0]), float(splitLine[1]), float(splitLine[2])]
+		atomTypes[i] = atomicSymbolToNumber(splitLine[3])
+
+	f.close() #close the file
+	print atomCoords
+	print atomTypes
+
+	return MolecularGeometry(atomTypes,atomCoords) #return the MolecularGeometry object
+
+def atomicSymbolToNumber(symbol):
+	"""Converts atomic symbol string to atomic number integer(e.g. 'C'->1)
+
+	Currently only supports C, H, and O
+	"""
+	if(symbol=='C'):
+		return 6
+	elif(symbol=='O'):
+		return 8
+	else:#hydrogen
+		return 1
