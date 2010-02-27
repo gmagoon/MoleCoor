@@ -384,8 +384,8 @@ def dictionaryMaxAbs(dict):
 	return max(abs(min(v)),abs(max(v)))
 
 
-def readMolFile(filename):
-	"""Given a mole file, constructs a MolecularGeometry object
+def readMOLFile(filename):
+	"""Given a MOL file, constructs a MolecularGeometry object
 
 	Currently only supports C, H, and O atoms
 	"""
