@@ -159,8 +159,7 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 					break
 		mappingLabels = mapping[0]
 		mappingType = hetMapType1[mappingLabels]
-		hetMap2_icopy = hetMap2.copy()#make a copy of hetMap2 for the purposes of iteration (according to Python docs, iterating while adding or removing entries may cause RuntimeError)
-		for i in hetMap2_icopy:#search in hetMap2 for cases with the same mapping type and a pre-established atom correspondence
+		for i in hetMap2:#search in hetMap2 for cases with the same mapping type and a pre-established atom correspondence
 			if(hetMap2TargetLabel==i[0] or hetMap2TargetLabel==i[1] or hetMap2TargetLabel==-1): # this line checks whether the target atom label is consistent with previously established mappings;
 				if(hetMapType2[i]==mappingType):#this line does the mapping type check
 					if(distanceMatchQ(mapping[1],hetMap2[i], Atol=Atol, Rtol=Rtol)): #for each case where this is true, check that all other het and hom mappings involving already identified atoms also satisfy the constriant, removing them in the process
@@ -204,8 +203,7 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 					break
 		mappingLabels = mapping[0]
 		mappingType = homMapType1[mappingLabels]
-		homMap2_icopy = homMap2.copy()#make a copy of homMap2 for the purposes of iteration (according to Python docs, iterating while adding or removing entries may cause RuntimeError)
-		for i in homMap2_icopy:#search in homMap2 for cases with the appropriate target atoms
+		for i in homMap2:#search in homMap2 for cases with the appropriate target atoms
 			if(homMap2TargetLabel==i[0] or homMap2TargetLabel==i[1] or homMap2TargetLabel==-1): # this line checks whether the target atom label is consistent with previously established mappings
 				if(distanceMatchQ(mapping[1],homMap2[i], Atol=Atol, Rtol=Rtol)): #for each case where this returns true, check that all other het and hom mappings involving already identified atoms also satisfy the constriant, removing them in the process
 					#copy all the dictionaries that will be subsequently modified
