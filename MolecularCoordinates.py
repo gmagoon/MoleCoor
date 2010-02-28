@@ -275,16 +275,16 @@ def distanceMatchQ(val1, val2, Atol=-1, Rtol=-1):
 
 	Assumes exactly one of Rtol and Atol is positive; the one that is positive will be used; Rtol is based on the minimum of the values; in this way, the result should not depend on the order of val1 and val2
 	"""
-	if(Atol>0):#use Atol
-		if(abs(val2-val1)< Atol):
-		    return True
-		else:
-		    return False
-	else:#Rtol > 0, use Rtol
-		if(abs(val2-val1)/min(val1,val2)< Rtol):
-		    return True
-		else:
-		    return False
+	#if(Atol>0):#use Atol
+	if(abs(val2-val1)< Atol):
+	    return True
+	else:
+	    return False
+	#else:#Rtol > 0, use Rtol
+	#	if(abs(val2-val1)/min(val1,val2)< Rtol):
+	#	    return True
+	#	else:
+	#	    return False
 
 def mappedDistanceMatchQ(hetMap1, homMap1, hetMap2, homMap2, atomMap, Atol=-1, Rtol=-1):
 	"""Given atomMap, checks whether distances in hetMap2 and homMap2 are consistent (within specified tol) with hetMap1; mappings are removed from the dictionaries as they are found to match
