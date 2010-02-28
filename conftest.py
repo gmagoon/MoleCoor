@@ -40,15 +40,13 @@ class  ConfTestCase(unittest.TestCase):
 		self.assertEqual(q, True)
 		self.assertEqual(len(n), 120) #A result of 120 seems reasonable (symmetry number is 60)
 
-#	def testDistinctJP10Conf(self):
-#		""" A test of distinct JP-10 conformations
-#
-#		The conformations differ in the puckering of one of the rings
-#		"""
-#		#a = MolecularCoordinates.MolecularGeometry([1,1,1,1,1,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[0,1,1],[1,0,1],[1,1,0],[1,1,1]])
-#		#b = MolecularCoordinates.MolecularGeometry([1,1,1,1,1,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[0,1,1],[1,0,1],[1,1,0],[1,1,1]])
-#		(q, n) = MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=0.05)
-#		self.assertEqual(q, False)
+	def testDistinctJP10Conf(self):
+		""" A test of distinct JP-10 conformations
+
+		The conformations differ in the puckering of one of the rings; conformations come from CBS-QB3 calculations with opt=verytight and int=ultrafine (JP10_A.log and JP10_B.log in my records)
+		"""
+		(q, n) = conftest.DistinctJP10Conf()
+		self.assertEqual(q, False)
 #
 #	def testOptConf(self):
 #		""" A test of equivalent conformations of a large molecule obtained from optimization with different potential energy calculation methods
@@ -167,6 +165,11 @@ def Buckminsterfullerene():
 	b = MolecularCoordinates.readMOLFile('c60_c.mol')
 	return MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=0.01)
 
+def DistinctJP10Conf():
+	a = MolecularCoordinates.readMOLFile('JP10A.mol')
+	b = MolecularCoordinates.readMOLFile('JP10B.mol')
+	return MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=0.10)
+
 if __name__ == '__main__':
 	from timeit import Timer
 	startup = """import MolecularCoordinates
@@ -175,6 +178,8 @@ import conftest
 	test1 = "(q, n) = conftest.SimpleHetConf()"
 	test2 = "(q, n) = conftest.SimpleHomConf()"
 	test3 = "(q, n) = conftest.MirrorImageConf()"
+	test4 = "(q, n) = conftest.Buckminsterfullerene()"
+	test5 = "(q, n) = conftest.DistinctJP10Conf()"
 	t = Timer(test1,startup)
 	times = t.repeat(repeat=5,number=1000)
 	print "test1 took %.3f seconds (%s)"%(min(times), times)
@@ -184,5 +189,11 @@ import conftest
 	t = Timer(test3, startup)
 	times = t.repeat(repeat=5,number=100)
 	print "test3 took %.3f seconds (%s)"%(min(times), times)
+	t = Timer(test4, startup)
+	times = t.repeat(repeat=1,number=1)
+	print "test4 took %.3f seconds (%s)"%(min(times), times)
+	t = Timer(test5, startup)
+	times = t.repeat(repeat=5,number=100)
+	print "test5 took %.3f seconds (%s)"%(min(times), times)
 	print "\nContinuing with tests..."
 	unittest.main(testRunner = unittest.TextTestRunner(verbosity=2))
