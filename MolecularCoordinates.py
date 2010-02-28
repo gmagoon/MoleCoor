@@ -126,8 +126,8 @@ def checkConformationalEquivalence(mg1, mg2, Atol=-1, Rtol=-1):
 	(hetMap1, homMap1, hetMapType1, homMapType1)=mg1.getDistanceMappings()
 	(hetMap2, homMap2, hetMapType2, homMapType2)=mg2.getDistanceMappings()
 
-	atomMap = {}
-	successfulAtomMapList = []
+	atomMap = {} #a dictionary to keep track of the currently defined atom mappings as the algorithm progresses
+	successfulAtomMapList = [] #a "pseudo-global" list variable to keep track of all successful atomMaps identified
 
 	(matchQ, matches) = checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, hetMapType2, homMapType2, atomMap, successfulAtomMapList, Atol=Atol, Rtol=Rtol)
 	
