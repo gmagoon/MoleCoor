@@ -178,7 +178,7 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 							newMapsC[mappingLabels[0]]=i[0]
 						if(mappingLabels[1] not in atomMapC):
 							newMapsC[mappingLabels[1]]=i[1]
-						mappedDistanceMatch = smartMappedDistanceMatchQ(hetMap1C, homMap1C, hetMap2C, homMap2C, atomType1, atomType2, atomMapC, newMapsC, Atol=Atol, Rtol=Rtol)#note that, by design, this will modify (remove elements from) the dictionaries
+						mappedDistanceMatch = smartMappedDistanceMatchQ(hetMap1C, homMap1C, hetMap2C, homMap2C, atomType1, atomType2, mappingLabels, atomMapC, newMapsC, Atol=Atol, Rtol=Rtol)#note that, by design, this will modify (remove elements from) the dictionaries
 						if(mappedDistanceMatch):#if so,  call a new instance of checkDistance with copies (dict.copy()) of variables with appropriately adjusted/popped values
 							if(checkDistance(hetMap1C, homMap1C, hetMapType1, homMapType1, hetMap2C, homMap2C, hetMapType2, homMapType2, atomType1, atomType2, atomMapC, successfulAtomMapList, Atol=Atol, Rtol=Rtol)[0]):#if they return true, set successfulMatch to true
 								successfulMatchQ = True
@@ -233,8 +233,8 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 						newMapsC[mappingLabels[1]]=i[1]
 						newMapsD[mappingLabels[0]]=i[1]#mapping 2
 						newMapsD[mappingLabels[1]]=i[0]
-						mappedDistanceMatch1 = smartMappedDistanceMatchQ(hetMap1C, homMap1C, hetMap2C, homMap2C, atomType1, atomType2, atomMapC, newMapsC, Atol=Atol, Rtol=Rtol)#note that, by design, this will modify (remove elements from) the dictionaries
-						mappedDistanceMatch2 = smartMappedDistanceMatchQ(hetMap1D, homMap1D, hetMap2D, homMap2D, atomType1, atomType2, atomMapD, newMapsD, Atol=Atol, Rtol=Rtol)#note that, by design, this will modify (remove elements from) the dictionaries
+						mappedDistanceMatch1 = smartMappedDistanceMatchQ(hetMap1C, homMap1C, hetMap2C, homMap2C, atomType1, atomType2, mappingLabels, atomMapC, newMapsC, Atol=Atol, Rtol=Rtol)#note that, by design, this will modify (remove elements from) the dictionaries
+						mappedDistanceMatch2 = smartMappedDistanceMatchQ(hetMap1D, homMap1D, hetMap2D, homMap2D, atomType1, atomType2, mappingLabels, atomMapD, newMapsD, Atol=Atol, Rtol=Rtol)#note that, by design, this will modify (remove elements from) the dictionaries
 						if(mappedDistanceMatch1):#call a new instance of checkDistance with copies (dict.copy()) of variables with appropriately adjusted/popped values
 							if(checkDistance(hetMap1C, homMap1C, hetMapType1, homMapType1, hetMap2C, homMap2C, hetMapType2, homMapType2, atomType1, atomType2, atomMapC, successfulAtomMapList, Atol=Atol, Rtol=Rtol)[0]):#if they return true, set successfulMatch to true
 								successfulMatchQ = True
@@ -248,7 +248,7 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 							newMapsC[mappingLabels[0]]=i[1]
 						else:
 							print "Algorithm error: unable to correctly match labels"
-						mappedDistanceMatch = smartMappedDistanceMatchQ(hetMap1C, homMap1C, hetMap2C, homMap2C, atomType1, atomType2, atomMapC, newMapsC, Atol=Atol, Rtol=Rtol)#note that, by design, this will modify (remove elements from) the dictionaries
+						mappedDistanceMatch = smartMappedDistanceMatchQ(hetMap1C, homMap1C, hetMap2C, homMap2C, atomType1, atomType2, mappingLabels, atomMapC, newMapsC, Atol=Atol, Rtol=Rtol)#note that, by design, this will modify (remove elements from) the dictionaries
 						if(mappedDistanceMatch):#if so,  call a new instance of checkDistance with copies (dict.copy()) of variables with appropriately adjusted/popped values
 							if(checkDistance(hetMap1C, homMap1C, hetMapType1, homMapType1, hetMap2C, homMap2C, hetMapType2, homMapType2, atomType1, atomType2, atomMapC, successfulAtomMapList, Atol=Atol, Rtol=Rtol)[0]):#if they return true, set successfulMatch to true
 								successfulMatchQ = True
@@ -259,7 +259,7 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 							newMapsC[mappingLabels[1]]=i[1]
 						else:
 							print "Algorithm error: unable to correctly match labels"
-						mappedDistanceMatch = smartMappedDistanceMatchQ(hetMap1C, homMap1C, hetMap2C, homMap2C, atomType1, atomType2, atomMapC, newMapsC, Atol=Atol, Rtol=Rtol)#note that, by design, this will modify (remove elements from) the dictionaries
+						mappedDistanceMatch = smartMappedDistanceMatchQ(hetMap1C, homMap1C, hetMap2C, homMap2C, atomType1, atomType2, mappingLabels, atomMapC, newMapsC, Atol=Atol, Rtol=Rtol)#note that, by design, this will modify (remove elements from) the dictionaries
 						if(mappedDistanceMatch):#if so,  call a new instance of checkDistance with copies (dict.copy()) of variables with appropriately adjusted/popped values
 							if(checkDistance(hetMap1C, homMap1C, hetMapType1, homMapType1, hetMap2C, homMap2C, hetMapType2, homMapType2, atomType1, atomType2, atomMapC, successfulAtomMapList, Atol=Atol, Rtol=Rtol)[0]):#if they return true, set successfulMatch to true
 								successfulMatchQ = True
@@ -322,17 +322,21 @@ def mappedDistanceMatchQ(hetMap1, homMap1, hetMap2, homMap2, atomMap, Atol=-1, R
 
 		return True #return true if the threshhold has not been exceeded
 
-def smartMappedDistanceMatchQ(hetMap1, homMap1, hetMap2, homMap2, atomType1, atomType2, atomMap, newMaps, Atol=-1, Rtol=-1):
+def smartMappedDistanceMatchQ(hetMap1, homMap1, hetMap2, homMap2, atomType1, atomType2, mappingLabels1, atomMap, newMaps, Atol=-1, Rtol=-1):
 	"""Given atomMap, checks whether distances in hetMap2 and homMap2 are consistent (within specified tol) with hetMap1; mappings are removed from the dictionaries as they are found to match
 
 	atomMap IS modified...newMaps is added to atomMap; unlike the regular mappedDistanceMatchQ function, this uses information about the new mappings in an attempt to be faster (we don't iterate over all the elements of the maps and we don't have to search through long atom maps
 	newMaps is expected to have length 2 at most (this will occur on the first iteration) and length 1 otherwise; if length 2, the mapping has already been checked earlier within the calling checkDistance function
+	mappingLabels1 includes the recently added mapping; we must avoid checking the distance in this case as these cases have already been popped out of the maps for 1 and 2
 	I don't think atomType2 is needed, but it is included for symmetry
 	"""
-	if(len(atomMap) < 3): #if there are only two mappings (as there will be on the first iteration), there cannot be anything else to check (the two mappings will already have been checked)
+	if(len(atomMap) < 1): #if there are no old mappings (as there will be on the first iteration), there cannot be anything else to check (the two mappings will already have been checked)
+		#copy newMaps elements into atomMaps
+		for i in newMaps:
+			atomMap[i] = newMaps[i]
 		return True
 	else:
-		for i in newMaps:
+		for i in newMaps:#iterate over new atom distances, corresponding to a combination of a new mapped atom with an old mapped atom
 			i2 = newMaps[i]
 			iT1 = atomType1[i-1]
 			for j in atomMap:
@@ -347,7 +351,9 @@ def smartMappedDistanceMatchQ(hetMap1, homMap1, hetMap2, homMap2, atomType1, ato
 						targetLabels = (i2, j2)
 					else: #canonical target ordering = (j2, i2)
 						targetLabels = (j2, i2)
-					if(not distanceMatchQ(homMap1[originLabels], homMap2[targetLabels], Atol=Atol, Rtol=Rtol)):
+					if(originLabels==mappingLabels1):#every time this function is called there should be one case that has just been checked in the calling check distance function; we do not want to try to check this case as the elements have already been removed from the distance maps
+						pass
+					elif(not distanceMatchQ(homMap1[originLabels], homMap2[targetLabels], Atol=Atol, Rtol=Rtol)):
 						return False
 					else:
 						del homMap1[originLabels]
@@ -359,7 +365,9 @@ def smartMappedDistanceMatchQ(hetMap1, homMap1, hetMap2, homMap2, atomType1, ato
 					else: #(atomType1[i-1]>atomType1[j-1]): canonical ordering is (j,i)
 						originLabels = (j, i)
 						targetLabels = (j2, i2)
-					if(not distanceMatchQ(hetMap1[originLabels], hetMap2[targetLabels], Atol=Atol, Rtol=Rtol)):
+					if(originLabels==mappingLabels1):#every time this function is called there should be one case that has just been checked in the calling check distance function; we do not want to try to check this case as the elements have already been removed from the distance maps
+						pass
+					elif(not distanceMatchQ(hetMap1[originLabels], hetMap2[targetLabels], Atol=Atol, Rtol=Rtol)):
 						return False
 					else:
 						del hetMap1[originLabels]
@@ -457,3 +465,6 @@ def atomicSymbolToNumber(symbol):
 #	a = readMOLFile('JP10A.mol')
 #	b = readMOLFile('JP10B.mol')
 #	(q, n) = checkConformationalEquivalence(b, a, Atol=0.10)
+#	a = MolecularGeometry([6,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1]])
+#	b = MolecularGeometry([6,1,1,1],[[0,0,0],[1,0,0],[0,1,0],[0,0,1]])
+#	(q, n) = checkConformationalEquivalence(b, a, Atol=0.01)
