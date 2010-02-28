@@ -47,7 +47,16 @@ class  ConfTestCase(unittest.TestCase):
 		"""
 		(q, n) = conftest.DistinctJP10Conf()
 		self.assertEqual(q, False)
-#
+
+	def testAtomTypeSwapConf(self):
+		""" A test of molecules with swapped atom types
+
+		The two "conformations" have atoms in the same position, but the types of atoms in each position are different, and thus should produce a value of False when compared
+		"""
+		(q, n) = conftest.AtomTypeSwapConf()
+		self.assertEqual(q, False)
+
+
 #	def testOptConf(self):
 #		""" A test of equivalent conformations of a large molecule obtained from optimization with different potential energy calculation methods
 #
@@ -169,6 +178,11 @@ def DistinctJP10Conf():
 	a = MolecularCoordinates.readMOLFile('JP10A.mol')
 	b = MolecularCoordinates.readMOLFile('JP10B.mol')
 	return MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=0.10)
+
+def AtomTypeSwapConf():
+	a = MolecularCoordinates.MolecularGeometry([8,1,1],[[0,0,0],[1,0,0],[0,1,0]])
+	b = MolecularCoordinates.MolecularGeometry([1,8,1],[[0,0,0],[1,0,0],[0,1,0]])
+	return MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=0.01)
 
 if __name__ == '__main__':
 	from timeit import Timer
