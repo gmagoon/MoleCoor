@@ -57,7 +57,7 @@ class  ConfTestCase(unittest.TestCase):
 		self.assertEqual(q, False)
 
 	def testLongLinearChainConf(self):
-		""" A test of a long linear chain of
+		""" A test of a long linear chain
 
 		There should only be one unique atom mapping here by the construction of the distances (each atom-to-atom distance should be unique ; the function LongLinearChainConf is actually more useful for timing of scaling for large numbers of atoms, but it doesn't hurt to also check that the results are what we expect
 		"""
@@ -211,8 +211,8 @@ import conftest
 	test3 = "(q, n) = conftest.MirrorImageConf()"
 	test4 = "(q, n) = conftest.Buckminsterfullerene()"
 	test5 = "(q, n) = conftest.DistinctJP10Conf()"
-	test6 = "(q, n) = conftest.LongLinearChainConf(150)"
-	test7 = "(q, n) = conftest.LongLinearChainConf(300)"
+	test6 = "(q, n) = conftest.LongLinearChainConf(75)"
+	test7 = "(q, n) = conftest.LongLinearChainConf(150)"
 	t = Timer(test1,startup)
 	times = t.repeat(repeat=5,number=1000)
 	print "test1 took %.3f seconds (%s)"%(min(times), times)
