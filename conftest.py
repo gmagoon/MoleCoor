@@ -211,6 +211,8 @@ import conftest
 	test3 = "(q, n) = conftest.MirrorImageConf()"
 	test4 = "(q, n) = conftest.Buckminsterfullerene()"
 	test5 = "(q, n) = conftest.DistinctJP10Conf()"
+	test6 = "(q, n) = conftest.LongLinearChainConf(150)"
+	test7 = "(q, n) = conftest.LongLinearChainConf(300)"
 	t = Timer(test1,startup)
 	times = t.repeat(repeat=5,number=1000)
 	print "test1 took %.3f seconds (%s)"%(min(times), times)
@@ -226,5 +228,11 @@ import conftest
 	t = Timer(test5, startup)
 	times = t.repeat(repeat=5,number=100)
 	print "test5 took %.3f seconds (%s)"%(min(times), times)
+	t = Timer(test6, startup)
+	times = t.repeat(repeat=3,number=1)
+	print "test6 took %.3f seconds (%s)"%(min(times), times)
+	t = Timer(test7, startup)
+	times = t.repeat(repeat=3,number=1)
+	print "test7 took %.3f seconds (%s)"%(min(times), times)
 	print "\nContinuing with tests..."
 	unittest.main(testRunner = unittest.TextTestRunner(verbosity=2))
