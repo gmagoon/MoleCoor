@@ -148,27 +148,21 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 			mapping = hetMap1.popitem()
 			hetMap2TargetLabel = -1 #-1 corresponds to first iteration, where we don't have a particular target atom
 		else:
-			oldfound=False
-			newfound=False
-		#	print atomMap
-		#	print hetMap1
-			for i in range(1,len(atomType1)+1):#iterate over all the atom labels, looking for something old and something new
-				if(i in atomMap and not oldfound):#look for an "old" atom that has already been assigned
-					if(not newfound or (atomType1[label1new-1] != atomType1[i-1])):#make sure the atom types are different
-						label1old=i
-						oldfound=True
-				elif(i not in atomMap and not newfound):
-					if(not oldfound or (atomType1[label1old-1] != atomType1[i-1])):#make sure the atom types are different
-						label1new=i
-						newfound=True
-				if(oldfound and newfound):
-					if (atomType1[label1new-1] < atomType1[label1old-1]):#use canonical ordering
-						labels1=(label1new,label1old)
-					else:
-						labels1=(label1old,label1new)
-					hetMap2TargetLabel = atomMap[label1old]
-					mapping =  (labels1, hetMap1.pop(labels1))
+			for i in range(1,len(atomType1)+1):#iterate over all the atom labels, looking for something new (i.e. not in the atomMap yet)
+				if(i not in atomMap):
+					label1new=i
 					break
+			for i in range(1,len(atomType1)+1):#iterate over all the atom labels, looking for something old (i.e. a mapping has already been found) and with a different atom type
+				if(i in atomMap and (atomType1[label1new-1] != atomType1[i-1])):#look for an "old" atom with a different atom type
+					label1old=i
+					break
+			if (atomType1[label1new-1] < atomType1[label1old-1]):#use canonical ordering
+				labels1=(label1new,label1old)
+			else:
+				labels1=(label1old,label1new)
+			hetMap2TargetLabel = atomMap[label1old]
+			mapping =  (labels1, hetMap1.pop(labels1))
+					
 		mappingLabels = mapping[0]
 		mappingType = hetMapType1[mappingLabels]
 		for i in hetMap2:#search in hetMap2 for cases with the same mapping type and a pre-established atom correspondence
@@ -205,25 +199,20 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 			mapping = homMap1.popitem()
 			homMap2TargetLabel = -1 #-1 corresponds to first iteration, where we don't have a particular target atom
 		else:
-			oldfound=False
-			newfound=False
-			for i in range(1,len(atomType1)+1):#iterate over all the atom labels, looking for something old and something new
-				if(i in atomMap and not oldfound):#look for an "old" atom that has already been assigned
-					#atom types should automatically be the same here by the design of the algorithm, so we do not need to check
-					label1old=i
-					oldfound=True
-				elif(i not in atomMap and not newfound):
-					#atom types should automatically be the same here by the design of the algorithm, so we do not need to check
+			for i in range(1,len(atomType1)+1):#iterate over all the atom labels, looking for something new
+				if(i not in atomMap):
 					label1new=i
-					newfound=True
-				if(oldfound and newfound):
-					if (label1new < label1old):#use canonical ordering
-						labels1=(label1new,label1old)
-					else:
-						labels1=(label1old,label1new)
-					homMap2TargetLabel = atomMap[label1old]
-					mapping =  (labels1, homMap1.pop(labels1))
 					break
+			for i in range(1,len(atomType1)+1):#iterate over all the atom labels, looking for something old
+				if(i in atomMap):#look for an "old" atom (by structure of algorithm, if we get to this block, all atoms will have the same atom type, so we don't need to check that it is the same)
+					label1old=i
+					break
+			if (label1new < label1old):#use canonical ordering
+				labels1=(label1new,label1old)
+			else:
+				labels1=(label1old,label1new)
+			homMap2TargetLabel = atomMap[label1old]
+			mapping =  (labels1, homMap1.pop(labels1))
 		mappingLabels = mapping[0]
 		mappingType = homMapType1[mappingLabels]
 		for i in homMap2:#search in homMap2 for cases with the appropriate target atoms
