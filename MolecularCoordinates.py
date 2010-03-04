@@ -148,14 +148,26 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 			mapping = hetMap1.popitem()
 			hetMap2TargetLabel = -1 #-1 corresponds to first iteration, where we don't have a particular target atom
 		else:
-			for i in hetMap1:
-				if(i[0] in atomMap):
-					mapping =  (i, hetMap1.pop(i))
-					hetMap2TargetLabel = atomMap[i[0]]
-					break
-				elif(i[1] in atomMap):
-					mapping = (i, hetMap1.pop(i))
-					hetMap2TargetLabel = atomMap[i[1]]
+			oldfound=False
+			newfound=False
+		#	print atomMap
+		#	print hetMap1
+			for i in range(1,len(atomType1)+1):#iterate over all the atom labels, looking for something old and something new
+				if(i in atomMap and not oldfound):#look for an "old" atom that has already been assigned
+					if(not newfound or (atomType1[label1new-1] != atomType1[i-1])):#make sure the atom types are different
+						label1old=i
+						oldfound=True
+				elif(i not in atomMap and not newfound):
+					if(not oldfound or (atomType1[label1old-1] != atomType1[i-1])):#make sure the atom types are different
+						label1new=i
+						newfound=True
+				if(oldfound and newfound):
+					if (atomType1[label1new-1] < atomType1[label1old-1]):#use canonical ordering
+						labels1=(label1new,label1old)
+					else:
+						labels1=(label1old,label1new)
+					hetMap2TargetLabel = atomMap[label1old]
+					mapping =  (labels1, hetMap1.pop(labels1))
 					break
 		mappingLabels = mapping[0]
 		mappingType = hetMapType1[mappingLabels]
@@ -193,14 +205,24 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 			mapping = homMap1.popitem()
 			homMap2TargetLabel = -1 #-1 corresponds to first iteration, where we don't have a particular target atom
 		else:
-			for i in homMap1:
-				if(i[0] in atomMap):
-					mapping =  (i, homMap1.pop(i))
-					homMap2TargetLabel = atomMap[i[0]]
-					break
-				elif(i[1] in atomMap):
-					mapping = (i, homMap1.pop(i))
-					homMap2TargetLabel = atomMap[i[1]]
+			oldfound=False
+			newfound=False
+			for i in range(1,len(atomType1)+1):#iterate over all the atom labels, looking for something old and something new
+				if(i in atomMap and not oldfound):#look for an "old" atom that has already been assigned
+					#atom types should automatically be the same here by the design of the algorithm, so we do not need to check
+					label1old=i
+					oldfound=True
+				elif(i not in atomMap and not newfound):
+					#atom types should automatically be the same here by the design of the algorithm, so we do not need to check
+					label1new=i
+					newfound=True
+				if(oldfound and newfound):
+					if (label1new < label1old):#use canonical ordering
+						labels1=(label1new,label1old)
+					else:
+						labels1=(label1old,label1new)
+					homMap2TargetLabel = atomMap[label1old]
+					mapping =  (labels1, homMap1.pop(labels1))
 					break
 		mappingLabels = mapping[0]
 		mappingType = homMapType1[mappingLabels]
