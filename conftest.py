@@ -56,6 +56,14 @@ class  ConfTestCase(unittest.TestCase):
 		(q, n) = conftest.AtomTypeSwapConf()
 		self.assertEqual(q, False)
 
+	def testLongLinearChainConf(self):
+		""" A test of a long linear chain of
+
+		There should only be one unique atom mapping here by the construction of the distances (each atom-to-atom distance should be unique ; the function LongLinearChainConf is actually more useful for timing of scaling for large numbers of atoms, but it doesn't hurt to also check that the results are what we expect
+		"""
+		(q, n) = conftest.LongLinearChainConf(30)#use a chain of length 30 for this test
+		self.assertEqual(q, True)
+		self.assertEqual(len(n), 1)
 
 #	def testOptConf(self):
 #		""" A test of equivalent conformations of a large molecule obtained from optimization with different potential energy calculation methods
@@ -183,6 +191,15 @@ def AtomTypeSwapConf():
 	a = MolecularCoordinates.MolecularGeometry([8,1,1],[[0,0,0],[1,0,0],[0,1,0]])
 	b = MolecularCoordinates.MolecularGeometry([1,8,1],[[0,0,0],[1,0,0],[0,1,0]])
 	return MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=0.01)
+
+def LongLinearChainConf(n):
+	#n represents the number of atoms in the chain
+	#all the atom-to-atom distances should be unique by the "binary" construction of the coordinates
+	atomtypes = [1 for i in range(0,n)]
+	atomcoor = [[2**i,0,0] for i in range(0,n)]
+	a = MolecularCoordinates.MolecularGeometry(atomtypes,atomcoor)
+	b = MolecularCoordinates.MolecularGeometry(atomtypes,atomcoor)
+	return MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=0.5)
 
 if __name__ == '__main__':
 	from timeit import Timer
