@@ -56,14 +56,24 @@ class  ConfTestCase(unittest.TestCase):
 		(q, n) = conftest.AtomTypeSwapConf()
 		self.assertEqual(q, False)
 
-	def testLongLinearChainConf(self):
-		""" A test of a long linear chain
+	def testLongLinearChainHomConf(self):
+		""" A test of a long linear homogeneous chain
 
 		There should only be one unique atom mapping here by the construction of the distances (each atom-to-atom distance should be unique ; the function LongLinearChainConf is actually more useful for timing of scaling for large numbers of atoms, but it doesn't hurt to also check that the results are what we expect
 		"""
-		(q, n) = conftest.LongLinearChainConf(30)#use a chain of length 30 for this test
+		(q, n) = conftest.LongLinearChainHomConf(30)#use a chain of length 30 for this test
 		self.assertEqual(q, True)
 		self.assertEqual(len(n), 1)
+
+	def testLongLinearChainHetConf(self):
+		""" A test of a long linear heterogeneous chain
+
+		There should only be one unique atom mapping here due to the use of different atom types
+		"""
+		(q, n) = conftest.LongLinearChainHomConf(30)#use a chain of length 30 for this test
+		self.assertEqual(q, True)
+		self.assertEqual(len(n), 1)
+
 
 #	def testOptConf(self):
 #		""" A test of equivalent conformations of a large molecule obtained from optimization with different potential energy calculation methods
@@ -192,11 +202,19 @@ def AtomTypeSwapConf():
 	b = MolecularCoordinates.MolecularGeometry([1,8,1],[[0,0,0],[1,0,0],[0,1,0]])
 	return MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=0.01)
 
-def LongLinearChainConf(n):
+def LongLinearChainHomConf(n):
 	#n represents the number of atoms in the chain
 	#all the atom-to-atom distances should be unique by the "binary" construction of the coordinates
 	atomtypes = [1 for i in range(0,n)]
 	atomcoor = [[2**i,0,0] for i in range(0,n)]
+	a = MolecularCoordinates.MolecularGeometry(atomtypes,atomcoor)
+	b = MolecularCoordinates.MolecularGeometry(atomtypes,atomcoor)
+	return MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=0.5)
+
+def LongLinearChainHetConf(n):
+	#n represents the number of atoms in the chain
+	atomtypes = [i for i in range(0,n)]
+	atomcoor = [[i,0,0] for i in range(0,n)]
 	a = MolecularCoordinates.MolecularGeometry(atomtypes,atomcoor)
 	b = MolecularCoordinates.MolecularGeometry(atomtypes,atomcoor)
 	return MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=0.5)
@@ -211,8 +229,8 @@ import conftest
 	test3 = "(q, n) = conftest.MirrorImageConf()"
 	test4 = "(q, n) = conftest.Buckminsterfullerene()"
 	test5 = "(q, n) = conftest.DistinctJP10Conf()"
-	test6 = "(q, n) = conftest.LongLinearChainConf(75)"
-	test7 = "(q, n) = conftest.LongLinearChainConf(150)"
+	test6 = "(q, n) = conftest.LongLinearChainHomConf(75)"
+	test7 = "(q, n) = conftest.LongLinearChainHomConf(150)"
 	t = Timer(test1,startup)
 	times = t.repeat(repeat=5,number=1000)
 	print "test1 took %.3f seconds (%s)"%(min(times), times)
@@ -235,8 +253,12 @@ import conftest
 	times = t.repeat(repeat=3,number=1)
 	print "test7 took %.3f seconds (%s)"%(min(times), times)
 	for i in range(1,301):
-		t = Timer("(q, n) = conftest.LongLinearChainConf(%s)"%(i), startup)
+		t = Timer("(q, n) = conftest.LongLinearChainHetConf(%s)"%(i), startup)
 		times = t.repeat(repeat=1,number=1)
 		print (min(times))
+	#for i in range(1,301):
+	#	t = Timer("(q, n) = conftest.LongLinearChainHomConf(%s)"%(i), startup)
+	#	times = t.repeat(repeat=1,number=1)
+	#	print (min(times))
 	print "\nContinuing with tests..."
 	unittest.main(testRunner = unittest.TextTestRunner(verbosity=2))
