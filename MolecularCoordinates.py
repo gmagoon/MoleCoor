@@ -174,7 +174,7 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 						i=(b,a)#determine canonical ordering
 					if(i in hetMap2 and hetMapType2[i]==mappingType):#this line does the mapping type check
 						if(distanceMatchQ(mapping[1],hetMap2[i], Atol=Atol, Rtol=Rtol)): #for each case where this is true, check that all other het and hom mappings involving already identified atoms also satisfy the constriant, removing them in the process
-							hetBlock(i, hetMap1, homMap1, hetMap2, homMap2, atomType1, atomType2, mappingLabels, hetMapType1, homMapType1, hetMapType2, homMapType2, atomMap, successfulAtomMapList, successfulMatchQ, Atol, Rtol)
+							successfulMatchQ = hetBlock(i, hetMap1, homMap1, hetMap2, homMap2, atomType1, atomType2, mappingLabels, hetMapType1, homMapType1, hetMapType2, homMapType2, atomMap, successfulAtomMapList, successfulMatchQ, Atol, Rtol)
 			else:#on other iterations
 				if (atomType2[a-1] < atomType2[hetMap2TargetLabel-1]):#use canonical ordering
 					i=(a,hetMap2TargetLabel)
@@ -182,7 +182,7 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 					i=(hetMap2TargetLabel,a)
 				if(i in hetMap2 and hetMapType2[i]==mappingType):#this line does the mapping type check
 					if(distanceMatchQ(mapping[1],hetMap2[i], Atol=Atol, Rtol=Rtol)): #for each case where this is true, check that all other het and hom mappings involving already identified atoms also satisfy the constriant, removing them in the process
-						hetBlock(i, hetMap1, homMap1, hetMap2, homMap2, atomType1, atomType2, mappingLabels, hetMapType1, homMapType1, hetMapType2, homMapType2, atomMap, successfulAtomMapList, successfulMatchQ, Atol, Rtol)
+						successfulMatchQ = hetBlock(i, hetMap1, homMap1, hetMap2, homMap2, atomType1, atomType2, mappingLabels, hetMapType1, homMapType1, hetMapType2, homMapType2, atomMap, successfulAtomMapList, successfulMatchQ, Atol, Rtol)
 		#if(not successfulMatchQ):
 		#	print atomMap
 		#restore the initial popped out mapping
@@ -221,7 +221,7 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 						i=(b,a)#determine canonical ordering
 					if(i in homMap2):#this line does the mapping type check
 						if(distanceMatchQ(mapping[1],homMap2[i], Atol=Atol, Rtol=Rtol)): #for each case where this is true, check that all other het and hom mappings involving already identified atoms also satisfy the constriant, removing them in the process
-							homBlock(i, hetMap1, homMap1, hetMap2, homMap2, atomType1, atomType2, mappingLabels, hetMapType1, homMapType1, hetMapType2, homMapType2, atomMap, successfulAtomMapList, successfulMatchQ, Atol, Rtol)
+							successfulMatchQ = homBlock(i, hetMap1, homMap1, hetMap2, homMap2, atomType1, atomType2, mappingLabels, hetMapType1, homMapType1, hetMapType2, homMapType2, atomMap, successfulAtomMapList, successfulMatchQ, Atol, Rtol)
 			else:#on other iterations
 				if (a < homMap2TargetLabel):#use canonical ordering
 					i=(a,homMap2TargetLabel)
@@ -229,7 +229,7 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 					i=(homMap2TargetLabel,a)
 				if(i in homMap2):
 					if(distanceMatchQ(mapping[1],homMap2[i], Atol=Atol, Rtol=Rtol)): #for each case where this is true, check that all other het and hom mappings involving already identified atoms also satisfy the constriant, removing them in the process
-						homBlock(i, hetMap1, homMap1, hetMap2, homMap2, atomType1, atomType2, mappingLabels, hetMapType1, homMapType1, hetMapType2, homMapType2, atomMap, successfulAtomMapList, successfulMatchQ, Atol, Rtol)
+						successfulMatchQ = homBlock(i, hetMap1, homMap1, hetMap2, homMap2, atomType1, atomType2, mappingLabels, hetMapType1, homMapType1, hetMapType2, homMapType2, atomMap, successfulAtomMapList, successfulMatchQ, Atol, Rtol)
 		#if(not successfulMatchQ):
 		#	print atomMap
 		#restore the initial popped out mapping
@@ -240,6 +240,7 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 		return True, successfulAtomMapList
 
 def hetBlock(i, hetMap1, homMap1, hetMap2, homMap2, atomType1, atomType2, mappingLabels, hetMapType1, homMapType1, hetMapType2, homMapType2, atomMap, successfulAtomMapList, successfulMatchQ, Atol, Rtol):
+	successfulMatchLocal = successfulMatchQ
 	#update the dictionaries
 	#hetMap1 has already been popped; homMaps don't need to be popped yet
 	hetMap2copy = (i, hetMap2.pop(i)) #pop out the assigned mapping, making a copy in the process
@@ -252,7 +253,7 @@ def hetBlock(i, hetMap1, homMap1, hetMap2, homMap2, atomType1, atomType2, mappin
 	(mappedDistanceMatch,addHetMap1,addHomMap1,addHetMap2,addHomMap2)= smartMappedDistanceMatchQ(hetMap1, homMap1, hetMap2, homMap2, atomType1, atomType2, mappingLabels, atomMap, newMaps, Atol=Atol, Rtol=Rtol)#note that, by design, this will modify (remove elements from) the dictionaries
 	if(mappedDistanceMatch):#if so,  call a new instance of checkDistance with copies (dict.copy()) of variables with appropriately adjusted/popped values
 		if(checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, hetMapType2, homMapType2, atomType1, atomType2, atomMap, successfulAtomMapList, Atol=Atol, Rtol=Rtol)[0]):#if they return true, set successfulMatch to true
-			successfulMatchQ = True
+			successfulMatchLocal = True
 		for j in newMaps:
 			del atomMap[j]
 	#return dictionaries to their previous state
@@ -265,9 +266,10 @@ def hetBlock(i, hetMap1, homMap1, hetMap2, homMap2, atomType1, atomType2, mappin
 		hetMap2[j]=addHetMap2[j]
 	for j in addHomMap2:
 		homMap2[j]=addHomMap2[j]
+	return successfulMatchLocal
 
 def homBlock(i, hetMap1, homMap1, hetMap2, homMap2, atomType1, atomType2, mappingLabels, hetMapType1, homMapType1, hetMapType2, homMapType2, atomMap, successfulAtomMapList, successfulMatchQ, Atol, Rtol):
-
+	successfulMatchLocal = successfulMatchQ
 	#update the dictionaries
 	#homMap1 has already been popped; hetMaps are empty
 	homMap2copy = (i, homMap2.pop(i)) #pop out the assigned mapping
@@ -280,7 +282,7 @@ def homBlock(i, hetMap1, homMap1, hetMap2, homMap2, atomType1, atomType2, mappin
 		(mappedDistanceMatch1,addHetMap1,addHomMap1,addHetMap2,addHomMap2) = smartMappedDistanceMatchQ(hetMap1, homMap1, hetMap2, homMap2, atomType1, atomType2, mappingLabels, atomMap, newMaps, Atol=Atol, Rtol=Rtol)#note that, by design, this will modify (remove elements from) the dictionaries
 		if(mappedDistanceMatch1):#call a new instance of checkDistance with copies (dict.copy()) of variables with appropriately adjusted/popped values
 			if(checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, hetMapType2, homMapType2, atomType1, atomType2, atomMap, successfulAtomMapList, Atol=Atol, Rtol=Rtol)[0]):#if they return true, set successfulMatch to true
-				successfulMatchQ = True
+				successfulMatchLocal = True
 			for j in newMaps:
 				del atomMap[j]
 		#return dictionaries to their previous state
@@ -299,7 +301,7 @@ def homBlock(i, hetMap1, homMap1, hetMap2, homMap2, atomType1, atomType2, mappin
 		(mappedDistanceMatch2,addHetMap1,addHomMap1,addHetMap2,addHomMap2) = smartMappedDistanceMatchQ(hetMap1, homMap1, hetMap2, homMap2, atomType1, atomType2, mappingLabels, atomMap, newMaps, Atol=Atol, Rtol=Rtol)#note that, by design, this will modify (remove elements from) the dictionaries
 		if(mappedDistanceMatch2):#call a new instance of checkDistance with copies (dict.copy()) of variables with appropriately adjusted/popped values
 			if(checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, hetMapType2, homMapType2, atomType1, atomType2, atomMap, successfulAtomMapList, Atol=Atol, Rtol=Rtol)[0]):#if they return true, set successfulMatch to true
-				successfulMatchQ = True
+				successfulMatchLocal = True
 			for j in newMaps:
 				del atomMap[j]
 	elif(mappingLabels[0] not in atomMap):#label 0 is the new one; label 1 is already mapped
@@ -312,7 +314,7 @@ def homBlock(i, hetMap1, homMap1, hetMap2, homMap2, atomType1, atomType2, mappin
 		(mappedDistanceMatch,addHetMap1,addHomMap1,addHetMap2,addHomMap2) = smartMappedDistanceMatchQ(hetMap1, homMap1, hetMap2, homMap2, atomType1, atomType2, mappingLabels, atomMap, newMaps, Atol=Atol, Rtol=Rtol)#note that, by design, this will modify (remove elements from) the dictionaries
 		if(mappedDistanceMatch):#if so,  call a new instance of checkDistance with copies (dict.copy()) of variables with appropriately adjusted/popped values
 			if(checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, hetMapType2, homMapType2, atomType1, atomType2, atomMap, successfulAtomMapList, Atol=Atol, Rtol=Rtol)[0]):#if they return true, set successfulMatch to true
-				successfulMatchQ = True
+				successfulMatchLocal = True
 			for j in newMaps:
 				del atomMap[j]
 	elif(mappingLabels[1] not in atomMap): #label 1 is the new one; label 0 is already mapped
@@ -325,7 +327,7 @@ def homBlock(i, hetMap1, homMap1, hetMap2, homMap2, atomType1, atomType2, mappin
 		(mappedDistanceMatch,addHetMap1,addHomMap1,addHetMap2,addHomMap2) = smartMappedDistanceMatchQ(hetMap1, homMap1, hetMap2, homMap2, atomType1, atomType2, mappingLabels, atomMap, newMaps, Atol=Atol, Rtol=Rtol)#note that, by design, this will modify (remove elements from) the dictionaries
 		if(mappedDistanceMatch):#if so,  call a new instance of checkDistance with copies (dict.copy()) of variables with appropriately adjusted/popped values
 			if(checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, hetMapType2, homMapType2, atomType1, atomType2, atomMap, successfulAtomMapList, Atol=Atol, Rtol=Rtol)[0]):#if they return true, set successfulMatch to true
-				successfulMatchQ = True
+				successfulMatchLocal = True
 			for j in newMaps:
 				del atomMap[j]
 	else:#this should not happen
@@ -340,6 +342,7 @@ def homBlock(i, hetMap1, homMap1, hetMap2, homMap2, atomType1, atomType2, mappin
 		hetMap2[j]=addHetMap2[j]
 	for j in addHomMap2:
 		homMap2[j]=addHomMap2[j]
+	return successfulMatchLocal
 
 def distanceMatchQ(val1, val2, Atol=-1, Rtol=-1):
 	"""Checks whether two values are within acceptable deviation
