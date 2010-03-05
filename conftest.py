@@ -259,10 +259,10 @@ import conftest
 	t = Timer(test7, startup)
 	times = t.repeat(repeat=3,number=1)
 	print "test7 took %.3f seconds (%s)"%(min(times), times)
-	for i in range(1,301):
-		t = Timer("a = conftest.LongLinearChainHetConfDist(%s)"%(i), startup)
-		times = t.repeat(repeat=1,number=1)
-		print (min(times))
+	#for i in range(1,301):
+	#	t = Timer("a = conftest.LongLinearChainHetConfDist(%s)"%(i), startup)
+	#	times = t.repeat(repeat=1,number=1)
+	#	print (min(times))
 	#for i in range(1,301):
 	#	t = Timer("(q, n) = conftest.LongLinearChainHetConf(%s)"%(i), startup)
 	#	times = t.repeat(repeat=1,number=1)
