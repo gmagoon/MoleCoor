@@ -219,6 +219,13 @@ def LongLinearChainHetConf(n):
 	b = MolecularCoordinates.MolecularGeometry(atomtypes,atomcoor)
 	return MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=0.5)
 
+def LongLinearChainHetConfDist(n):
+	#n represents the number of atoms in the chain
+	atomtypes = [i for i in range(0,n)]
+	atomcoor = [[i,0,0] for i in range(0,n)]
+	a = MolecularCoordinates.MolecularGeometry(atomtypes,atomcoor)
+	return a.getDistanceMappings()
+
 if __name__ == '__main__':
 	from timeit import Timer
 	startup = """import MolecularCoordinates
@@ -253,9 +260,13 @@ import conftest
 	times = t.repeat(repeat=3,number=1)
 	print "test7 took %.3f seconds (%s)"%(min(times), times)
 	for i in range(1,301):
-		t = Timer("(q, n) = conftest.LongLinearChainHetConf(%s)"%(i), startup)
+		t = Timer("a = conftest.LongLinearChainHetConfDist(%s)"%(i), startup)
 		times = t.repeat(repeat=1,number=1)
 		print (min(times))
+	#for i in range(1,301):
+	#	t = Timer("(q, n) = conftest.LongLinearChainHetConf(%s)"%(i), startup)
+	#	times = t.repeat(repeat=1,number=1)
+	#	print (min(times))
 	#for i in range(1,301):
 	#	t = Timer("(q, n) = conftest.LongLinearChainHomConf(%s)"%(i), startup)
 	#	times = t.repeat(repeat=1,number=1)
