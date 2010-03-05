@@ -167,7 +167,7 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 		mappingType = hetMapType1[mappingLabels]
 		for a in range(1,len(atomType1)+1):#search in hetMap2 for cases with the same mapping type and a pre-established atom correspondence
 			if(hetMap2TargetLabel==-1):#for the first iteration, we should check all atom pairs
-				for b in range(1,len(atomType1)+1):
+				for b in range(a+1,len(atomType1)+1):
 					if (atomType2[a-1] < atomType2[b-1]):#use canonical ordering
 						i=(a,b)
 					else:
@@ -214,7 +214,7 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 		mappingType = homMapType1[mappingLabels]
 		for a in range(1,len(atomType1)+1):#search in homMap2 for cases with the appropriate target atoms
 			if(homMap2TargetLabel==-1):#for the first iteration, we should check all atom pairs
-				for b in range(1,len(atomType1)+1):
+				for b in range(a+1,len(atomType1)+1):
 					if (a < b):#use canonical ordering
 						i=(a,b)
 					else:
