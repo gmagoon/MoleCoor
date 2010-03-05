@@ -236,7 +236,7 @@ def checkDistance(hetMap1, homMap1, hetMapType1, homMapType1, hetMap2, homMap2, 
 		homMap1[mapping[0]]=mapping[1]
 		return successfulMatchQ, successfulAtomMapList
 	else: #when both lists are empty, a successful mapping has been found and we return true
-		successfulAtomMapList.append(atomMap)
+		successfulAtomMapList.append(atomMap.copy())
 		return True, successfulAtomMapList
 
 def hetBlock(i, hetMap1, homMap1, hetMap2, homMap2, atomType1, atomType2, mappingLabels, hetMapType1, homMapType1, hetMapType2, homMapType2, atomMap, successfulAtomMapList, successfulMatchQ, Atol, Rtol):
