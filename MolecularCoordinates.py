@@ -526,7 +526,7 @@ def readMOLFile(filename):
 	return MolecularGeometry(atomTypes,atomCoords) #return the MolecularGeometry object
 
 def atomicSymbolToNumber(symbol):
-	"""Converts atomic symbol string to atomic number integer (e.g. 'C'->1)
+	"""Converts atomic symbol string to atomic number integer (e.g. 'C'->6)
 
 	Currently only supports C, H, and O
 	"""
