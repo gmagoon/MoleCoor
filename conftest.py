@@ -228,6 +228,9 @@ def LongLinearChainHetConfDist(n):
 
 if __name__ == '__main__':
 	from timeit import Timer
+#	import math
+#	import conftest
+#	conftest.JP10CalcDistDev()
 	startup = """import MolecularCoordinates
 import conftest
 	"""
@@ -259,10 +262,34 @@ import conftest
 	t = Timer(test7, startup)
 	times = t.repeat(repeat=3,number=1)
 	print "test7 took %.3f seconds (%s)"%(min(times), times)
-	#for i in range(1,301):
-	#	t = Timer("a = conftest.LongLinearChainHetConfDist(%s)"%(i), startup)
-	#	times = t.repeat(repeat=1,number=1)
-	#	print (min(times))
+#	JP10startup = """import MolecularCoordinates
+#import conftest
+#a = MolecularCoordinates.readMOLFile('JP10A.mol')
+#b = MolecularCoordinates.readMOLFile('JP10B.mol')
+#	"""
+	#steps = 117
+	#mi=-9.0
+	#max=0.36
+	#steps=96
+	#min=-7.0
+	#max=0.68
+#	for i in range(0, steps+1):
+#		j=mi+i*(max-mi)/steps
+#		t = Timer("(q, n) = MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=%s)"%(math.exp(j)), JP10startup)
+#		times = t.repeat(repeat=10,number=1)
+#		#print j, times, q, len(n)
+#		print j, min(times)
+		#print j, times
+		#print "test8 took %.3f seconds (%s)"%(min(times), times)
+
+#	a = MolecularCoordinates.readMOLFile('JP10A.mol')
+#	b = MolecularCoordinates.readMOLFile('JP10B.mol')
+#	(q, n) = MolecularCoordinates.checkConformationalEquivalence(a, b, Atol=1.2)
+#	print len(n), n
+#	for i in range(0, steps+1):
+#		j=min+i*(max-min)/steps
+#		(q, n) = MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=math.exp(j))
+#		print j, math.exp(j), q, len(n)
 	#for i in range(1,301):
 	#	t = Timer("(q, n) = conftest.LongLinearChainHetConf(%s)"%(i), startup)
 	#	times = t.repeat(repeat=1,number=1)
@@ -273,3 +300,18 @@ import conftest
 	#	print (min(times))
 	print "\nContinuing with tests..."
 	unittest.main(testRunner = unittest.TextTestRunner(verbosity=2))
+
+def JP10CalcDistDev():
+	""" A test of distance deviations, given a mapping
+
+
+	"""
+	a = MolecularCoordinates.readMOLFile('JP10A.mol')
+	b = MolecularCoordinates.readMOLFile('JP10B.mol')
+	#atomMap = {1:1, 2:2, 3:3, 4:4, 5:5, 6:6, 7:7, 8:8, 9:9, 10:10, 11:11, 12:12, 13:13, 14:14, 15:15, 16:16, 17:17, 18:18, 19:19, 20:20, 21:21, 22:22, 23:23, 24:24, 25:25, 26:26} #"correct" mapping
+	#atomMap =  {1: 2, 2: 1, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11, 12: 12, 13: 13, 14: 14, 15: 15, 16: 16, 17: 17, 18: 18, 19: 19, 20: 20, 21: 21, 22: 22, 23: 24, 24: 25, 25: 26, 26: 23}#test mapping #15
+	atomMap = {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11, 12: 12, 13: 13, 14: 14, 15: 15, 16: 16, 17: 17, 18: 18, 19: 19, 20: 20, 21: 21, 22: 22, 23: 24, 24: 25, 25: 26, 26: 23} #test mapping #13
+	(distDevAbs,distDevRel) = MolecularCoordinates.calcDistanceDeviationsGivenMapping(a, b, atomMap)
+	distDevAbsMax = MolecularCoordinates.dictionaryMaxAbs(distDevAbs)
+	distDevRelMax = MolecularCoordinates.dictionaryMaxAbs(distDevRel)
+	print distDevAbsMax
