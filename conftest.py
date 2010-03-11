@@ -56,6 +56,23 @@ class  ConfTestCase(unittest.TestCase):
 		(q, n) = conftest.AtomTypeSwapConf()
 		self.assertEqual(q, False)
 
+	def testLongLinearChainHomConf(self):
+		""" A test of a long linear homogeneous chain
+
+		There should only be one unique atom mapping here by the construction of the distances (each atom-to-atom distance should be unique ; the function LongLinearChainConf is actually more useful for timing of scaling for large numbers of atoms, but it doesn't hurt to also check that the results are what we expect
+		"""
+		(q, n) = conftest.LongLinearChainHomConf(30)#use a chain of length 30 for this test
+		self.assertEqual(q, True)
+		self.assertEqual(len(n), 1)
+
+	def testLongLinearChainHetConf(self):
+		""" A test of a long linear heterogeneous chain
+
+		There should only be one unique atom mapping here due to the use of different atom types
+		"""
+		(q, n) = conftest.LongLinearChainHomConf(30)#use a chain of length 30 for this test
+		self.assertEqual(q, True)
+		self.assertEqual(len(n), 1)
 
 #	def testOptConf(self):
 #		""" A test of equivalent conformations of a large molecule obtained from optimization with different potential energy calculation methods
@@ -184,8 +201,35 @@ def AtomTypeSwapConf():
 	b = MolecularCoordinates.MolecularGeometry([1,8,1],[[0,0,0],[1,0,0],[0,1,0]])
 	return MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=0.01)
 
+def LongLinearChainHomConf(n):
+	#n represents the number of atoms in the chain
+	#all the atom-to-atom distances should be unique by the "binary" construction of the coordinates
+	atomtypes = [1 for i in range(0,n)]
+	atomcoor = [[2**i,0,0] for i in range(0,n)]
+	a = MolecularCoordinates.MolecularGeometry(atomtypes,atomcoor)
+	b = MolecularCoordinates.MolecularGeometry(atomtypes,atomcoor)
+	return MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=0.5)
+
+def LongLinearChainHetConf(n):
+	#n represents the number of atoms in the chain
+	atomtypes = [i for i in range(0,n)]
+	atomcoor = [[i,0,0] for i in range(0,n)]
+	a = MolecularCoordinates.MolecularGeometry(atomtypes,atomcoor)
+	b = MolecularCoordinates.MolecularGeometry(atomtypes,atomcoor)
+	return MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=0.5)
+
+def LongLinearChainHetConfDist(n):
+	#n represents the number of atoms in the chain
+	atomtypes = [i for i in range(0,n)]
+	atomcoor = [[i,0,0] for i in range(0,n)]
+	a = MolecularCoordinates.MolecularGeometry(atomtypes,atomcoor)
+	return a.getDistanceMappings()
+
 if __name__ == '__main__':
 	from timeit import Timer
+#	import math
+#	import conftest
+#	conftest.JP10CalcDistDev()
 	startup = """import MolecularCoordinates
 import conftest
 	"""
@@ -194,6 +238,8 @@ import conftest
 	test3 = "(q, n) = conftest.MirrorImageConf()"
 	test4 = "(q, n) = conftest.Buckminsterfullerene()"
 	test5 = "(q, n) = conftest.DistinctJP10Conf()"
+	test6 = "(q, n) = conftest.LongLinearChainHomConf(75)"
+	test7 = "(q, n) = conftest.LongLinearChainHomConf(150)"
 	t = Timer(test1,startup)
 	times = t.repeat(repeat=5,number=1000)
 	print "test1 took %.3f seconds (%s)"%(min(times), times)
@@ -209,5 +255,62 @@ import conftest
 	t = Timer(test5, startup)
 	times = t.repeat(repeat=5,number=100)
 	print "test5 took %.3f seconds (%s)"%(min(times), times)
+	t = Timer(test6, startup)
+	times = t.repeat(repeat=3,number=1)
+	print "test6 took %.3f seconds (%s)"%(min(times), times)
+	t = Timer(test7, startup)
+	times = t.repeat(repeat=3,number=1)
+	print "test7 took %.3f seconds (%s)"%(min(times), times)
+#	JP10startup = """import MolecularCoordinates
+#import conftest
+#a = MolecularCoordinates.readMOLFile('JP10A.mol')
+#b = MolecularCoordinates.readMOLFile('JP10B.mol')
+#	"""
+	#steps = 117
+	#mi=-9.0
+	#max=0.36
+	#steps=96
+	#min=-7.0
+	#max=0.68
+#	for i in range(0, steps+1):
+#		j=mi+i*(max-mi)/steps
+#		t = Timer("(q, n) = MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=%s)"%(math.exp(j)), JP10startup)
+#		times = t.repeat(repeat=10,number=1)
+#		#print j, times, q, len(n)
+#		print j, min(times)
+		#print j, times
+		#print "test8 took %.3f seconds (%s)"%(min(times), times)
+
+#	a = MolecularCoordinates.readMOLFile('JP10A.mol')
+#	b = MolecularCoordinates.readMOLFile('JP10B.mol')
+#	(q, n) = MolecularCoordinates.checkConformationalEquivalence(a, b, Atol=1.2)
+#	print len(n), n
+#	for i in range(0, steps+1):
+#		j=min+i*(max-min)/steps
+#		(q, n) = MolecularCoordinates.checkConformationalEquivalence(b, a, Atol=math.exp(j))
+#		print j, math.exp(j), q, len(n)
+	#for i in range(1,301):
+	#	t = Timer("(q, n) = conftest.LongLinearChainHetConf(%s)"%(i), startup)
+	#	times = t.repeat(repeat=1,number=1)
+	#	print (min(times))
+	#for i in range(1,301):
+	#	t = Timer("(q, n) = conftest.LongLinearChainHomConf(%s)"%(i), startup)
+	#	times = t.repeat(repeat=1,number=1)
+	#	print (min(times))
 	print "\nContinuing with tests..."
 	unittest.main(testRunner = unittest.TextTestRunner(verbosity=2))
+
+def JP10CalcDistDev():
+	""" A test of distance deviations, given a mapping
+
+
+	"""
+	a = MolecularCoordinates.readMOLFile('JP10A.mol')
+	b = MolecularCoordinates.readMOLFile('JP10B.mol')
+	#atomMap = {1:1, 2:2, 3:3, 4:4, 5:5, 6:6, 7:7, 8:8, 9:9, 10:10, 11:11, 12:12, 13:13, 14:14, 15:15, 16:16, 17:17, 18:18, 19:19, 20:20, 21:21, 22:22, 23:23, 24:24, 25:25, 26:26} #"correct" mapping
+	#atomMap =  {1: 2, 2: 1, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11, 12: 12, 13: 13, 14: 14, 15: 15, 16: 16, 17: 17, 18: 18, 19: 19, 20: 20, 21: 21, 22: 22, 23: 24, 24: 25, 25: 26, 26: 23}#test mapping #15
+	atomMap = {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11, 12: 12, 13: 13, 14: 14, 15: 15, 16: 16, 17: 17, 18: 18, 19: 19, 20: 20, 21: 21, 22: 22, 23: 24, 24: 25, 25: 26, 26: 23} #test mapping #13
+	(distDevAbs,distDevRel) = MolecularCoordinates.calcDistanceDeviationsGivenMapping(a, b, atomMap)
+	distDevAbsMax = MolecularCoordinates.dictionaryMaxAbs(distDevAbs)
+	distDevRelMax = MolecularCoordinates.dictionaryMaxAbs(distDevRel)
+	print distDevAbsMax
