@@ -141,8 +141,8 @@ class MolecularGeometry:
 			counter[self.connectivity[i][1]-1]=counter[self.connectivity[i][1]-1]+1
 		#now, counter should be filled with positive integers and "attached" atoms will have only 1 in their corresponding location in counter list
 		str = '%-60s3%4d 0  0 0  0%5s'%(moleculename[0:60], self.atoms, "0.5")#print first line (left-aligned molecule name truncated to 60 characters, option 3 for automatic SCF calcs, number of atoms (right justified), IPRINT=0, MDERIV (blank), NRSTR=0, INIT=0, NCONST=0, TMAX=0.5 minutes
-		str = ' %4d               %5d                                 1'%(ncon,nattach)#print second line: KFIXTYP omitted (assumed zero), a=0, NCON (number of connected atom lists), DEL, ISPEED (omitted), NATTACH (number of attached atom (each consists of a pair of integers), ISTYPE and LABEL and NDC and NCALC are skipped, HFORM=1 (heat of formation calculated)
-		for i in range(self.atoms)
+		str = ' %4d               %5d                                 1              0'%(ncon,nattach)#print second line: KFIXTYP omitted (assumed zero), a=0, NCON (number of connected atom lists), DEL, ISPEED (omitted), NATTACH (number of attached atom (each consists of a pair of integers), ISTYPE and LABEL and NDC and NCALC are skipped, HFORM=1 (heat of formation calculated), MVDW is skipped, NDRIVE=0 (for now; later this will probably be set at 1)
+
 		return 0
 
 
