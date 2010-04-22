@@ -48,6 +48,28 @@ class MolecularGeometry:
 		#find atomTypeRange
 		self.atomTypeRange = set(atomVec)
 
+	#initialization with connectivity information
+	def __init__(self, atomVec, xyzCoor, connectivity, atomLabels=None):
+		self.xyzCoor=xyzCoor
+		self.atomVec=atomVec
+		self.connectivity=connectivity
+		self.atoms = len(atomVec)
+		self.atomLabels = atomLabels or range(1, self.atoms+1)
+		#assert rows of xyzCoor = length of atomlabels = length of atomVec = atoms
+		#assert columns of xyzCoor = 3
+		#assert atomLabels contains all integers 1 through n
+
+		#map the labels to xyzCoordinates and atom types
+		self.coordDict= {}
+		self.atomTypeDict = {}
+		self.atomTypeRange = []
+		for i in range(self.atoms):
+		    self.coordDict[self.atomLabels[i]]=self.xyzCoor[i][0:3]
+		    self.atomTypeDict[self.atomLabels[i]]=self.atomVec[i]
+
+		#find atomTypeRange
+		self.atomTypeRange = set(atomVec)
+
 	def getDistanceMatrix(self):
 		"""
 		Constructs a (symmetric) matrix representing distances between atoms
@@ -106,6 +128,22 @@ class MolecularGeometry:
 		#an alternative: dictionary where each mapType maps to a dictionary, which in turn, maps labels to distances
 
 		return hetMap, homMap, hetMapType, homMapType
+
+	def writeMM4File(self, filename, moleculename):
+		"""
+
+		"""
+		#determine attached vs. connected atoms
+		b = len(self.connectivity)#the number of bonds
+		counter = [0 for i in range(self.atoms)]
+		for i in range(b):#count the number of times each atom appears
+			counter[self.connectivity[i][0]-1]=counter[self.connectivity[i][0]-1]+1
+			counter[self.connectivity[i][1]-1]=counter[self.connectivity[i][1]-1]+1
+		#now, counter should be filled with positive integers and "attached" atoms will have only 1 in their corresponding location in counter list
+		str = '%-60s3%4d 0  0 0  0%5s'%(moleculename[0:60], self.atoms, "0.5")#print first line (left-aligned molecule name truncated to 60 characters, option 3 for automatic SCF calcs, number of atoms (right justified), IPRINT=0, MDERIV (blank), NRSTR=0, INIT=0, NCONST=0, TMAX=0.5 minutes
+		str = ' %4d               %5d                                 1'%(ncon,nattach)#print second line: KFIXTYP omitted (assumed zero), a=0, NCON (number of connected atom lists), DEL, ISPEED (omitted), NATTACH (number of attached atom (each consists of a pair of integers), ISTYPE and LABEL and NDC and NCALC are skipped, HFORM=1 (heat of formation calculated)
+		for i in range(self.atoms)
+		return 0
 
 
 
@@ -498,6 +536,42 @@ def dictionaryMaxAbs(dict):
 	return max(abs(min(v)),abs(max(v)))
 
 
+def readMOLFileWithConnectivity(filename):
+	"""Given a MOL file, constructs a MolecularGeometry object with connectivity information
+
+	Currently only supports C, H, and O atoms
+	"""
+	f = open(filename, 'r')
+	#first three lines are irrelevant
+	f.readline()
+	f.readline()
+	f.readline()
+
+	line=f.readline()
+	n = int(line[0:3])#read the number of atoms
+	b = int(line[3:6])#read the number of bonds
+	#initialize the atomTypes, connectivity, and atomCoords arrays
+	#atomCoords = [[0.0 for j in range(3)] for i in range(n)]
+	atomCoords = [[] for i in range(n)]
+	connectivity = [[0,0] for i in range(b)]
+	atomTypes = [0 for i in range(n)]
+
+	#read info from the mole file into the arrays
+	for i in range(n):
+		splitLine = f.readline().split()
+		atomCoords[i] = [float(splitLine[0]), float(splitLine[1]), float(splitLine[2])]
+		atomTypes[i] = atomicSymbolToNumber(splitLine[3])
+
+	#read connectivity info from mole file
+	for i in range(b):
+		line = f.readline()
+		connectivity[i][0] = int(line[0:3])
+		connectivity[i][1] = int(line[3:6])
+
+	f.close() #close the file
+
+	return MolecularGeometry(atomTypes,atomCoords,connectivity) #return the MolecularGeometry object
+
 def readMOLFile(filename):
 	"""Given a MOL file, constructs a MolecularGeometry object
 
@@ -509,7 +583,7 @@ def readMOLFile(filename):
 	f.readline()
 	f.readline()
 
-	n = int(f.readline().split()[0])#read the number of atoms
+	n = int(f.readline()[0:3])#read the number of atoms
 	#initialize the atomTypes and atomCoords arrays
 	#atomCoords = [[0.0 for j in range(3)] for i in range(n)]
 	atomCoords = [[] for i in range(n)]
@@ -520,10 +594,11 @@ def readMOLFile(filename):
 		splitLine = f.readline().split()
 		atomCoords[i] = [float(splitLine[0]), float(splitLine[1]), float(splitLine[2])]
 		atomTypes[i] = atomicSymbolToNumber(splitLine[3])
-
+	
 	f.close() #close the file
 
 	return MolecularGeometry(atomTypes,atomCoords) #return the MolecularGeometry object
+
 
 def atomicSymbolToNumber(symbol):
 	"""Converts atomic symbol string to atomic number integer (e.g. 'C'->6)
