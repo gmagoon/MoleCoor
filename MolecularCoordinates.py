@@ -131,7 +131,9 @@ class MolecularGeometry:
 
 	def writeMM4File(self, filename, moleculename):
 		"""
+		Writes MM4 file
 
+		first 60 characters of moleculename will be used; file will be written to path specified by filename
 		"""
 		#determine attached vs. connected atoms
 		b = len(self.connectivity)#the number of bonds
@@ -150,7 +152,7 @@ class MolecularGeometry:
 
 		str1 = '%-60s3%4d 0  0 0  0%5s\n'%(moleculename[0:60], self.atoms, "0.5")#print first line (left-aligned molecule name truncated to 60 characters, option 3 for automatic SCF calcs, number of atoms (right justified), IPRINT=0, MDERIV (blank), NRSTR=0, INIT=0, NCONST=0, TMAX=0.5 minutes
 		str2 = ' %4d               %5d                                 1              0\n'%(ncon,nattach)#print second line: KFIXTYP omitted (assumed zero), a=0, NCON (number of connected atom lists), DEL, ISPEED (omitted), NATTACH (number of attached atom (each consists of a pair of integers), ISTYPE and LABEL and NDC and NCALC are skipped, HFORM=1 (heat of formation calculated), MVDW is skipped, NDRIVE=0 (for now; later this will probably be set at 1)
-		#build the strings for the third and fourth blocks
+		#build the strings for the third and fourth blocks (connected atom connectivity and attached atom connectivity, respectively)
 		str3=''
 		str4=''
 		attachedCounter=0
@@ -165,7 +167,20 @@ class MolecularGeometry:
 					str4=str4+'%5d%5d'%(self.connectivity[i][1],self.connectivity[i][0])
 				if(attachedCounter/8*8==attachedCounter or attachedCounter==nattach):#put a new line character when we are at the end of the line (a multiple of 8) or if we have reached the end of the attached atoms
 					str4=str4+'\n'
-		return 0
+		#build the string for the fifth block (coordinates and atom types)
+		str5=''
+		for i in range(n):
+			label=self.atomLabels[i]
+			coord=self.coordDict[label]
+			atomtyp=self.atomTypeDict[label]
+			str5=str5+'%10.5f%10.5f%10.5f%2s%3d(%3d)\n'%(coord[0],coord[1],coord[2],atomicNumberToSymbol(atomtyp),atomicNumberToMM4Type(atomtyp),label)
+		
+		#write the file
+		f = open(filename, 'w')
+		f.write(str1+str2+str3+str4+str5)
+		f.close()
+
+		return
 
 
 
@@ -633,6 +648,30 @@ def atomicSymbolToNumber(symbol):
 		return 8
 	else:#hydrogen
 		return 1
+
+def atomicNumberToSymbol(number):
+	"""Converts atomic number integer to atomic symbol string  (e.g. 6->'C')
+
+	Currently only supports C, H, and O
+	"""
+	if(number==6):
+		return 'C'
+	elif(number==8):
+		return 'O'
+	else:#hydrogen
+		return 'H'
+
+def atomicNumberToMM4Type(number):
+	"""Converts atomic number integer to MM4 atom type integer  (e.g. 6 (carbon)->1)
+
+	Currently only supports C, H, and O; relies on MM4 option KFIXTYP to refine atom types to be more specific/accurate
+	"""
+	if(number==6):
+		return 1
+	elif(number==8):
+		return 6
+	else:#hydrogen
+		return 5
 
 #if __name__ == '__main__':
 #	a = readMOLFile('JP10A.mol')
