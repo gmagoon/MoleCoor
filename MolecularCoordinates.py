@@ -165,7 +165,7 @@ class MolecularGeometry:
 					str4=str4+'%5d%5d'%(self.connectivity[i][0],self.connectivity[i][1])
 				else:#(self.connectivity[i][0] in attachedAtoms); the other attached case
 					str4=str4+'%5d%5d'%(self.connectivity[i][1],self.connectivity[i][0])
-				if(attachedCounter/8*8==attachedCounter or attachedCounter==nattach):#put a new line character when we are at the end of the line (a multiple of 8) or if we have reached the end of the attached atoms
+				if(attachedCounter%8==0 or attachedCounter==nattach):#put a new line character when we are at the end of the line (a multiple of 8) or if we have reached the end of the attached atoms
 					str4=str4+'\n'
 		#build the string for the fifth block (coordinates and atom types)
 		str5=''
