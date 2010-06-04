@@ -143,7 +143,7 @@ class MolecularGeometry:
 			counter[self.connectivity[i][1]-1]=counter[self.connectivity[i][1]-1]+1
 		#now, counter should be filled with positive integers and "attached" atoms will have only 1 in their corresponding location in counter list
 		#count and identify attached cases
-		attachedAtoms={}
+		attachedAtoms=[]
 		for i in range(self.atoms):
 			if counter[i]==1:
 				attachedAtoms.append(i+1)
