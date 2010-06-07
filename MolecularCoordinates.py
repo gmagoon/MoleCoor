@@ -150,7 +150,7 @@ class MolecularGeometry:
 		nattach=len(attachedAtoms)
 		ncon=b-nattach #the remainder are connected bonds, which will be written one at a time
 
-		str1a = '%-60s3%4d 0  0 0  0%5s'%(moleculename[0:60], self.atoms, "0.5")#first portion of first line (left-aligned molecule name truncated to 60 characters, option 3 for automatic SCF calcs, number of atoms (right justified), IPRINT=0, MDERIV (blank), NRSTR=0, INIT=0, NCONST=0, TMAX=0.5 minutes
+		str1a = '%-60s3%4d 0  0 0  0%5s'%(moleculename[0:60], self.atoms, "2.0")#first portion of first line (left-aligned molecule name truncated to 60 characters, option 3 for automatic SCF calcs, number of atoms (right justified), IPRINT=0, MDERIV (blank), NRSTR=0, INIT=0, NCONST=0, TMAX=2.0 minutes
 		str1b = moleculename + '\n' #print the full molecule name after the first 80 characters of the first line
 		str1=str1a+str1b
 		str2 = ' %4d                    %5d                                  1              0\n'%(ncon,nattach)#print second line: KFIXTYP omitted (assumed zero), a=0, NCON (number of connected atom lists), DEL, ISPEED (omitted), NATTACH (number of attached atom (each consists of a pair of integers), ISTYPE and LABEL and NDC and NCALC are skipped, HFORM=1 (heat of formation calculated), MVDW is skipped, NDRIVE=0 (for now; later this will probably be set at 1)
