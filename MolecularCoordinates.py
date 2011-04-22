@@ -27,32 +27,12 @@ class MolecularGeometry:
 	'atomTypeRange': the different possible values in atomVec
 	========= ==============================================================
 	"""
-	
-	def __init__(self, atomVec, xyzCoor, atomLabels=None):
-		self.xyzCoor=xyzCoor
-		self.atomVec=atomVec
-		self.atoms = len(atomVec)
-		self.atomLabels = atomLabels or range(1, self.atoms+1)
-		#assert rows of xyzCoor = length of atomlabels = length of atomVec = atoms
-		#assert columns of xyzCoor = 3
-		#assert atomLabels contains all integers 1 through n 
-
-		#map the labels to xyzCoordinates and atom types
-		self.coordDict= {}
-		self.atomTypeDict = {}
-		self.atomTypeRange = []
-		for i in range(self.atoms):
-		    self.coordDict[self.atomLabels[i]]=self.xyzCoor[i][0:3]
-		    self.atomTypeDict[self.atomLabels[i]]=self.atomVec[i]
-		
-		#find atomTypeRange
-		self.atomTypeRange = set(atomVec)
 
 	#initialization with connectivity information
-	def __init__(self, atomVec, xyzCoor, connectivity, atomLabels=None):
+	def __init__(self, atomVec, xyzCoor, connectivity=None, atomLabels=None):
 		self.xyzCoor=xyzCoor
 		self.atomVec=atomVec
-		self.connectivity=connectivity
+		self.connectivity=connectivity or False #connectivity will be false if it is not provided
 		self.atoms = len(atomVec)
 		self.atomLabels = atomLabels or range(1, self.atoms+1)
 		#assert rows of xyzCoor = length of atomlabels = length of atomVec = atoms
@@ -133,7 +113,7 @@ class MolecularGeometry:
 		"""
 		Writes MM4 file
 
-		first 60 characters of moleculename will be used; file will be written to path specified by filename
+		The molecule must have connectivity information or this will not work properly; first 60 characters of moleculename will be used; file will be written to path specified by filename
 		"""
 		#determine attached vs. connected atoms
 		b = len(self.connectivity)#the number of bonds
