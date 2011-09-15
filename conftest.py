@@ -314,3 +314,11 @@ def JP10CalcDistDev():
 	distDevAbsMax = MolecularCoordinates.dictionaryMaxAbs(distDevAbs)
 	distDevRelMax = MolecularCoordinates.dictionaryMaxAbs(distDevRel)
 	print distDevAbsMax
+
+def MM4ReadMOLWrite():
+	""" A test of MM4 reading and MOL writing
+
+
+	"""
+	mg1=MolecularCoordinates.readMM4File('JP10stochFixedStruct.out',1)
+	mg1.writeMOLFile('JP10_MM4_1.mol', 'JP10_MM4_1')

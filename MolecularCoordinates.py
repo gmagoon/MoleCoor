@@ -164,6 +164,31 @@ class MolecularGeometry:
 
 		return
 
+	def writeMOLFile(self, filename, moleculename):
+		"""
+		Writes MOL file (without connectivity)
+
+		will not necessarily be a valid MOL file (with RAD tags, etc.); file will be written to path specified by filename
+		"""
+		
+		#write the file
+		f = open(filename, 'w')
+		#write the header
+		f.write("\n")
+		f.write(moleculename+"\n")
+		f.write("\n")
+		#write the first line after the header
+		f.write(str(self.atoms)+ '  0  0  0  0  0  0  0  0  0  0 V2000\n')
+		#write the coordinates
+		for i in range(self.atoms):
+			label=self.atomLabels[i]
+			coord=self.coordDict[label]
+			atomtyp=self.atomTypeDict[label]
+			f.write('%9.4f %9.4f %9.4f %2s  0  0  0  0  0  0  0  0  0  0  0  0\n'%(coord[0],coord[1],coord[2],atomicNumberToSymbol(atomtyp)))
+		f.write('M  END\n')
+		f.close()
+
+		return
 
 
 ################################################################################
@@ -614,6 +639,36 @@ def readMOLFile(filename):
 		atomCoords[i] = [float(splitLine[0]), float(splitLine[1]), float(splitLine[2])]
 		atomTypes[i] = atomicSymbolToNumber(splitLine[3])
 	
+	f.close() #close the file
+
+	return MolecularGeometry(atomTypes,atomCoords) #return the MolecularGeometry object
+
+def readMM4File(filename,startline):
+	"""Given a MM4 file, constructs a MolecularGeometry object
+
+	Currently only supports C, H, and O atoms; startline is an index (starting with 1) indicating where the block of interest starts; in most cases, except conformer output sets, this will be 1
+	"""
+	f = open(filename, 'r')
+	#get to the block of interest
+	for i in range (startline-1):
+		f.readline()
+
+	n = int(f.readline()[61:65])#read the number of atoms
+	#initialize the atomTypes and atomCoords arrays
+	atomCoords = [[] for i in range(n)]
+	atomTypes = [0 for i in range(n)]
+
+	#look for the beginning of the coordinates by checking for C H or O
+	line = f.readline()
+	while ( line[30:32].strip()!='C' and line[30:32].strip()!='H' and line[30:32].strip()!='O'):
+		line = f.readline()
+	#read coordinate info from the file into the arrays
+	for i in range(n):
+		#splitLine = line.split()
+		atomCoords[i] = [float(line[0:10]), float(line[10:20]), float(line[20:30])]
+		atomTypes[i] = atomicSymbolToNumber(line[30:32].strip())
+		line = f.readline()
+
 	f.close() #close the file
 
 	return MolecularGeometry(atomTypes,atomCoords) #return the MolecularGeometry object
