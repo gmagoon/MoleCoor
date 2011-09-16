@@ -50,6 +50,35 @@ class MolecularGeometry:
 		#find atomTypeRange
 		self.atomTypeRange = set(atomVec)
 
+	def perceiveConnectivity(self, tol=0.45, minForBond=0.40):
+		"""
+		attempts to perceive connectivity in the molecule based on 3D coordinates
+
+		adds or overwrites the connectivity for the molecular geometry object; currently only works for C, H, O; this does NOT attempt to perceive bond order; based on approach described at http://www.eyesopen.com/docs/docs-v1.7.0-2/html/OEChemTK-python/connectivity.html and http://www.daylight.com/meetings/mug01/Sayle/m4xbondage.html
+		the default tolerance (in Angstroms) is 0.45, as discussed in the above references; other reasonable values cited are 0.40 and 0.56
+		the default minimum distance for a bond (in Angstroms) is 0.40, as discussed in the above references; an alternative would be 0.0
+		"""
+		#define dictionary for radii based on http://www.daylight.com/meetings/mug01/Sayle/m4xbondage.html
+		#Hydrogen H 1 0.23
+		#Carbon C 6 0.68
+		#Oxygen O 8 0.68
+		radii = {1: 0.23, 6: 0.68, 8: 0.68}
+		self.connectivity = [] # initialize the connectivity variable
+		#get the distance matrix
+		(hetMap, homMap, hetMapType, homMapType) = self.getDistanceMappings()
+		#iterate over homMap
+		for i in homMap:
+			type = homMapType[i]
+			if ((homMap[i] <= radii[type[0]]+radii[type[1]]+tol) and homMap[i]>=minForBond):#determine whether the atoms are connected
+				self.connectivity.append([i[0],i[1]])
+		#iterate over hetMap
+		for i in hetMap:
+			type = hetMapType[i]
+			if ((hetMap[i] <= radii[type[0]]+radii[type[1]]+tol) and hetMap[i]>=minForBond):#determine whether the atoms are connected
+				self.connectivity.append([i[0],i[1]])
+
+		return
+
 	def getDistanceMatrix(self):
 		"""
 		Constructs a (symmetric) matrix representing distances between atoms
@@ -164,11 +193,11 @@ class MolecularGeometry:
 
 		return
 
-	def writeMOLFile(self, filename, moleculename):
+	def writeMOLFile(self, filename, moleculename, connectivity=False):
 		"""
-		Writes MOL file (without connectivity)
+		Writes MOL file
 
-		will not necessarily be a valid MOL file (with RAD tags, etc.); file will be written to path specified by filename
+		default: do not include connectivity; when connectivity is included, the "strength" is written as 1 for all bonds (i.e. bond order is not considered); will not necessarily be a valid MOL file (with RAD tags, etc.); file will be written to path specified by filename
 		"""
 		
 		#write the file
@@ -178,14 +207,42 @@ class MolecularGeometry:
 		f.write(moleculename+"\n")
 		f.write("\n")
 		#write the first line after the header
-		f.write(str(self.atoms)+ '  0  0  0  0  0  0  0  0  0  0 V2000\n')
+		if connectivity:
+			f.write('%3d%3d  0  0  0  0  0  0  0  0  0 V2000\n'%(self.atoms,len(self.connectivity)))
+		else:
+			f.write('%3d  0  0  0  0  0  0  0  0  0  0 V2000\n'%(self.atoms))
 		#write the coordinates
 		for i in range(self.atoms):
 			label=self.atomLabels[i]
 			coord=self.coordDict[label]
 			atomtyp=self.atomTypeDict[label]
 			f.write('%9.4f %9.4f %9.4f %2s  0  0  0  0  0  0  0  0  0  0  0  0\n'%(coord[0],coord[1],coord[2],atomicNumberToSymbol(atomtyp)))
+		if connectivity:
+			for i in range(len(self.connectivity)):
+				f.write('%3d%3d  1  0  0  0  0\n'%(self.connectivity[i][0],self.connectivity[i][1]))
 		f.write('M  END\n')
+		f.close()
+
+		return
+
+	def writeXYZFile(self, filename, moleculename):
+		"""
+		Writes XYZ file (without connectivity)
+
+		cf. http://openbabel.org/wiki/XYZ_(format)
+		"""
+
+		#write the file
+		f = open(filename, 'w')
+		#write the header
+		f.write(str(self.atoms)+"\n")
+		f.write(moleculename+"\n")
+		#write the coordinates
+		for i in range(self.atoms):
+			label=self.atomLabels[i]
+			coord=self.coordDict[label]
+			atomtyp=self.atomTypeDict[label]
+			f.write('%2s %10.5f %10.5f %10.5f\n'%(atomicNumberToSymbol(atomtyp),coord[0],coord[1],coord[2]))
 		f.close()
 
 		return

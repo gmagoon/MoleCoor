@@ -316,7 +316,7 @@ def JP10CalcDistDev():
 	print distDevAbsMax
 
 def MM4ReadMOLWrite():
-	""" A test of MM4 reading and MOL writing
+	""" A test of MM4 reading and MOL, XYZ writing
 
 
 	"""
@@ -326,6 +326,9 @@ def MM4ReadMOLWrite():
 	mg1.writeMOLFile('JP10_MM4_1.mol', 'JP10_MM4_1')
 	mg2.writeMOLFile('JP10_MM4_8.mol', 'JP10_MM4_8')
 	mg1a.writeMOLFile('JP10_MM4_7.mol', 'JP10_MM4_7')
+	mg1.perceiveConnectivity()
+	mg1.writeMOLFile('JP10_MM4_1_conn.mol', 'JP10_MM4_1', connectivity=True)
+	mg1.writeXYZFile('JP10_MM4_1.xyz', 'JP10_MM4_1')
 	print MolecularCoordinates.checkConformationalEquivalence(mg1, mg1a, Atol=0.02)
 	atomMap = {1:1, 2:2, 3:3, 4:4, 5:5, 6:6, 7:7, 8:8, 9:9, 10:10, 11:11, 12:12, 13:13, 14:14, 15:15, 16:16, 17:17, 18:18, 19:19, 20:20, 21:21, 22:22, 23:23, 24:24, 25:25, 26:26} #"correct" mapping
 	(distDevAbs,distDevRel) = MolecularCoordinates.calcDistanceDeviationsGivenMapping(mg1, mg1a, atomMap)
