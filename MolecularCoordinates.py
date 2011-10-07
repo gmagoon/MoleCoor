@@ -700,6 +700,28 @@ def readMOLFile(filename):
 
 	return MolecularGeometry(atomTypes,atomCoords) #return the MolecularGeometry object
 
+def readXYZFile(filename):
+	"""Given an XYZ file, constructs a MolecularGeometry object
+
+	cf. http://openbabel.org/wiki/XYZ_(format); Currently only supports C, H, and O atoms
+	"""
+	f = open(filename, 'r')
+
+	n = int(f.readline())#read the number of atoms
+	f.readline()#read the molecule name
+	atomCoords = [[] for i in range(n)]
+	atomTypes = [0 for i in range(n)]
+
+	#read info from the coordinates into the arrays
+	for i in range(n):
+		splitLine = f.readline().split()
+		atomTypes[i] = atomicSymbolToNumber(splitLine[0])
+		atomCoords[i] = [float(splitLine[1]), float(splitLine[2]), float(splitLine[3])]
+
+	f.close() #close the file
+
+	return MolecularGeometry(atomTypes,atomCoords) #return the MolecularGeometry object
+
 def readMM4File(filename,startline):
 	"""Given a MM4 file, constructs a MolecularGeometry object
 
