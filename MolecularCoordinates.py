@@ -756,36 +756,58 @@ def readMM4File(filename,startline):
 def atomicSymbolToNumber(symbol):
 	"""Converts atomic symbol string to atomic number integer (e.g. 'C'->6)
 
-	Currently only supports C, H, and O
+	Currently only supports C, H, O, N, S, Si
 	"""
-	if(symbol=='C'):
+	if(symbol=='H'):
+		return 1
+	elif(symbol=='C'):
 		return 6
 	elif(symbol=='O'):
 		return 8
-	else:#hydrogen
-		return 1
+	elif(symbol=='N'):
+		return 7
+	elif(symbol=='S'):
+		return 16
+	elif(symbol=='Si'):
+		return 14
+	else:
+		return -1
 
 def atomicNumberToSymbol(number):
 	"""Converts atomic number integer to atomic symbol string  (e.g. 6->'C')
 
-	Currently only supports C, H, and O
+	Currently only supports C, H, O, N, S, Si
 	"""
-	if(number==6):
+	if(number==1):
+		return 'H'
+	elif(number==6):
 		return 'C'
 	elif(number==8):
 		return 'O'
-	else:#hydrogen
-		return 'H'
+	elif(number==7):
+		return 'N'
+	elif(number==16):
+		return 'S'
+	elif(number==14):
+		return 'Si'
+	else:
+		return 'Err'
 
 def atomicNumberToMM4Type(number):
 	"""Converts atomic number integer to MM4 atom type integer  (e.g. 6 (carbon)->1)
 
 	Currently only supports C, H, and O; relies on MM4 option KFIXTYP to refine atom types to be more specific/accurate
 	"""
-	if(number==6):
+	if(number==6):#carbon
 		return 1
-	elif(number==8):
+	elif(number==8):#oxygen
 		return 6
+	elif(number==7):#nitrogen
+		return 8
+	elif(number==16):#sulfur
+		return 15
+	elif(number==14):#silicon
+		return 19
 	else:#hydrogen
 		return 5
 
